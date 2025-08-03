@@ -41,8 +41,7 @@ class PoolConfigDialog(QDialog):
         # Tipo de moeda
         self.tipo_moeda = QComboBox()
         self.tipo_moeda.addItems([
-            "ETH/USDC", "DAI/ETH", "BTC/ETH", "USDC/DAI", 
-            "ETH/DAI", "BTC/USDC", "WETH/USDC", "Outro"
+            "ETH/USDC", "BTC/ETH", "BTC/USDC", "WETH/USDC", "Outro"
         ])
         form_layout.addRow("Tipo de Moeda:", self.tipo_moeda)
         

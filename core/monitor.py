@@ -1,6 +1,8 @@
 import csv
 import os
+import shutil
 from typing import List, Optional
+from utils.paths import get_data_file_path, get_legacy_file_path
 
 from models.coleta import Coleta
 from models.pool_config import PoolConfig
@@ -9,20 +11,41 @@ class MonitorLiquidez:
     """Gerencia as coletas e a persistência de dados."""
 
     def __init__(self, nome_arquivo_base: str = 'coletas.csv'):
+        # Usar get_data_file_path para ambos os arquivos
+        self.nome_arquivo = get_data_file_path(nome_arquivo_base)
         self.nome_arquivo_base = nome_arquivo_base
-        self.nome_arquivo = nome_arquivo_base
-        self.arquivo_config = 'pool_config.csv'
+        self.arquivo_config = get_data_file_path('pool_config.csv')  # ← MUDANÇA AQUI
         self.dados: List[Coleta] = []
         self.pool_config: Optional[PoolConfig] = None
 
+        # Migrar arquivos antigos se existirem
+        self._migrar_arquivos_se_necessario()
+
         self.carregar_config_pool()
         self.carregar_dados()
+
+    def _migrar_arquivos_se_necessario(self):
+        """Migra arquivos do diretório do app para diretório de dados do usuário."""
+        arquivos_para_migrar = [
+            (self.nome_arquivo_base, self.nome_arquivo),
+            ('pool_config.csv', self.arquivo_config)
+        ]
+        
+        for nome_base, caminho_novo in arquivos_para_migrar:
+            arquivo_antigo = get_legacy_file_path(nome_base)
+            
+            if os.path.exists(arquivo_antigo) and not os.path.exists(caminho_novo):
+                try:
+                    shutil.copy2(arquivo_antigo, caminho_novo)
+                    print(f"Arquivo migrado: {arquivo_antigo} -> {caminho_novo}")
+                except Exception as e:
+                    print(f"Erro ao migrar arquivo {nome_base}: {e}")
 
     def carregar_config_pool(self) -> None:
         """Carrega a configuração da pool."""
         if not os.path.exists(self.arquivo_config):
             return
-    
+        
         try:
             with open(self.arquivo_config, 'r', newline='', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
@@ -31,7 +54,7 @@ class MonitorLiquidez:
                     self.pool_config = PoolConfig.from_dict(config_data)
         except Exception as e:
             print(f"Erro ao carregar configuração: {e}")
-    
+        
     def salvar_config_pool(self, config: PoolConfig) -> None:
         """Salva a configuração da pool."""
         self.pool_config = config
@@ -43,7 +66,7 @@ class MonitorLiquidez:
                 writer.writerow(config.to_dict())
         except Exception as e:
             raise Exception(f"Erro ao salvar configuração: {e}")
-    
+        
     def carregar_dados(self) -> None:
         """Carrega dados existentes do arquivo CSV."""
         if not os.path.exists(self.nome_arquivo):
@@ -102,11 +125,11 @@ class MonitorLiquidez:
     def calcular_total_acumulado(self) -> float:
         """Calcula o total acumulado de todas as coletas."""
         return sum(coleta.coleta_usd for coleta in self.dados)
-    
+        
     def calcular_taxa_acumulada(self) -> float:
         """Calcula a taxa percentual acumulada."""
         return sum(coleta.taxa_percentual for coleta in self.dados)
-    
+        
     def registrar_nova_coleta(self, data: str, valor: float) -> Coleta:
         """Registra uma nova coleta."""
         taxa = 0.0
@@ -118,7 +141,7 @@ class MonitorLiquidez:
         self.salvar_todos_dados()
         
         return nova_coleta
-    
+        
     def recalcular_taxas(self) -> None:
         """Recalcula todas as taxas baseado na configuração atual da pool."""
         if not self.pool_config:
@@ -128,7 +151,7 @@ class MonitorLiquidez:
             coleta.taxa_percentual = (coleta.coleta_usd / self.pool_config.valor_inicial) * 100
         
         self.salvar_todos_dados()
-    
+        
     def exportar_dados(self, nome_arquivo: str) -> None:
         """Exporta dados para um arquivo CSV."""
         try:
@@ -158,7 +181,7 @@ class MonitorLiquidez:
                     ])
         except Exception as e:
             raise Exception(f"Erro ao exportar dados: {e}")
-    
+        
     def limpar_dados(self) -> None:
         """Remove todos os dados de coletas."""
         self.dados.clear()
