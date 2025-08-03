@@ -12,13 +12,14 @@ Aplicação para monitorar coletas de taxas em pools de liquidez com interface g
 ## Instalação
 
 1. Instale as dependências:
-```bash
+```
 pip install -r requirements.txt
 
-    Execute a aplicação:
+```
 
-bash
+2. Execute a aplicação:
 
-Copy
-
+```
 python main.py
+
+```
