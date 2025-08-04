@@ -1,249 +1,389 @@
 import sys
-from datetime import datetime
-from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, 
-                               QPushButton, QTableWidget, QTableWidgetItem, 
-                               QLineEdit, QLabel, QDateEdit, QMessageBox,
-                               QGroupBox, QFormLayout, QHeaderView)
-from PySide6.QtCore import Qt, QDate
-from PySide6.QtGui import QFont
+from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+                               QPushButton, QTableWidget, QTableWidgetItem, QLabel,
+                               QMessageBox, QFileDialog, QComboBox, QFrame, QDialog)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont, QIcon
 
 from core.monitor import MonitorLiquidez
-from gui.dialogs import PoolConfigDialog
-
+from gui.dialogs import PoolConfigDialog, NovaColetaDialog, SelecionarPoolDialog
 
 class MonitorColetasApp(QMainWindow):
-    """Janela principal do Monitor de Coletas."""
+    """Janela principal da aplicação."""
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Monitor de Coletas - Pool de Liquidez")
-        self.setGeometry(100, 100, 1000, 700)
-        
-        # Inicializar monitor de liquidez
         self.monitor = MonitorLiquidez()
-        
-        # Setup da interface
         self.setup_ui()
-        
-        # Carregar dados existentes na tabela
-        self.carregar_dados_tabela()
+        self.atualizar_interface()
     
     def setup_ui(self):
         """Configura a interface principal."""
+        self.setWindowTitle("Monitor de Coletas - Pools de Liquidez")
+        self.setGeometry(100, 100, 900, 600)
+        
+        # Widget central
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        main_layout = QVBoxLayout()
-        central_widget.setLayout(main_layout)
+        # Layout principal
+        layout = QVBoxLayout(central_widget)
+        layout.setSpacing(15)
+        layout.setContentsMargins(20, 20, 20, 20)
         
-        # Título
-        title = QLabel("Monitor de Coletas - Pool de Liquidez")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
-        title.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(title)
+        # Cabeçalho
+        self.criar_cabecalho(layout)
         
-        # Seção de configuração da pool
-        self.setup_config_section(main_layout)
+        # Seção de controle de pools
+        self.criar_secao_pools(layout)
         
-        # Seção de nova coleta
-        self.setup_nova_coleta_section(main_layout)
+        # Separador
+        separador = QFrame()
+        separador.setFrameShape(QFrame.HLine)
+        separador.setFrameShadow(QFrame.Sunken)
+        layout.addWidget(separador)
         
-        # Tabela de coletas
-        self.setup_tabela(main_layout)
+        # Seção de coletas
+        self.criar_secao_coletas(layout)
         
-        # Botões de ação
-        self.setup_botoes(main_layout)
+        # Tabela de dados
+        self.criar_tabela(layout)
+        
+        # Rodapé com totais
+        self.criar_rodape(layout)
     
-    def setup_config_section(self, main_layout):
-        """Configura a seção de configuração da pool."""
-        config_group = QGroupBox("Configuração da Pool")
-        config_layout = QHBoxLayout()
-        
-        # Labels de informação
-        self.info_pool = QLabel("Pool não configurada")
-        self.info_pool.setStyleSheet("color: red; font-weight: bold;")
-        config_layout.addWidget(self.info_pool)
-        
-        config_layout.addStretch()
-        
-        # Botão para configurar/editar pool
-        self.btn_config_pool = QPushButton("Configurar Pool")
-        self.btn_config_pool.clicked.connect(self.configurar_pool)
-        config_layout.addWidget(self.btn_config_pool)
-        
-        config_group.setLayout(config_layout)
-        main_layout.addWidget(config_group)
-        
-        # Atualizar display da configuração
-        self.atualizar_info_pool()
+    def criar_cabecalho(self, layout):
+        """Cria o cabeçalho da aplicação."""
+        titulo_label = QLabel("🏊‍♂️ Monitor de Coletas - Pools de Liquidez")
+        titulo_font = QFont()
+        titulo_font.setPointSize(18)
+        titulo_font.setBold(True)
+        titulo_label.setFont(titulo_font)
+        titulo_label.setAlignment(Qt.AlignCenter)
+        titulo_label.setStyleSheet("color: #ffffff; margin: 10px 0;")
+        layout.addWidget(titulo_label)
     
-    def setup_nova_coleta_section(self, main_layout):
-        """Configura a seção de nova coleta."""
-        coleta_group = QGroupBox("Nova Coleta")
-        coleta_layout = QFormLayout()
+    def criar_secao_pools(self, layout):
+        """Cria a seção de controle de pools."""
+        # Label da seção
+        secao_label = QLabel("🏊 Gerenciamento de Pools")
+        secao_font = QFont()
+        secao_font.setPointSize(12)
+        secao_font.setBold(True)
+        secao_label.setFont(secao_font)
+        secao_label.setStyleSheet("color: #ffffff; margin: 5px 0;")
+        layout.addWidget(secao_label)
         
-        # Data da coleta
-        self.data_coleta = QDateEdit()
-        self.data_coleta.setDate(QDate.currentDate())
-        self.data_coleta.setCalendarPopup(True)
-        coleta_layout.addRow("Data da Coleta:", self.data_coleta)
+        # Layout horizontal para controles de pool
+        pools_layout = QHBoxLayout()
         
-        # Valor coletado
-        self.valor_coleta = QLineEdit()
-        self.valor_coleta.setPlaceholderText("Ex: 25.75")
-        coleta_layout.addRow("Valor Coletado (USD):", self.valor_coleta)
+        # Dropdown de seleção de pool
+        pool_label = QLabel("Pool Ativa:")
+        pools_layout.addWidget(pool_label)
         
-        # Botão adicionar
-        self.btn_adicionar = QPushButton("Adicionar Coleta")
-        self.btn_adicionar.clicked.connect(self.adicionar_coleta)
-        coleta_layout.addRow("", self.btn_adicionar)
+        self.combo_pools = QComboBox()
+        self.combo_pools.setMinimumWidth(300)
+        self.combo_pools.currentTextChanged.connect(self.pool_selecionada_mudou)
+        pools_layout.addWidget(self.combo_pools)
         
-        coleta_group.setLayout(coleta_layout)
-        main_layout.addWidget(coleta_group)
+        pools_layout.addStretch()
+        
+        # Botões de gerenciamento
+        self.btn_nova_pool = QPushButton("➕ Nova Pool")
+        self.btn_nova_pool.clicked.connect(self.nova_pool)
+        self.btn_nova_pool.setStyleSheet("background-color: #27ae60; color: white; padding: 8px 15px; border-radius: 5px;")
+        pools_layout.addWidget(self.btn_nova_pool)
+        
+        self.btn_editar_pool = QPushButton("✏️ Editar")
+        self.btn_editar_pool.clicked.connect(self.editar_pool)
+        self.btn_editar_pool.setStyleSheet("background-color: #3498db; color: white; padding: 8px 15px; border-radius: 5px;")
+        pools_layout.addWidget(self.btn_editar_pool)
+        
+        self.btn_excluir_pool = QPushButton("🗑️ Excluir")
+        self.btn_excluir_pool.clicked.connect(self.excluir_pool)
+        self.btn_excluir_pool.setStyleSheet("background-color: #e74c3c; color: white; padding: 8px 15px; border-radius: 5px;")
+        pools_layout.addWidget(self.btn_excluir_pool)
+        
+        layout.addLayout(pools_layout)
     
-    def setup_tabela(self, main_layout):
-        """Configura a tabela de coletas."""
-        # Label da tabela
-        tabela_label = QLabel("Histórico de Coletas")
-        tabela_label.setFont(QFont("Arial", 12, QFont.Bold))
-        main_layout.addWidget(tabela_label)
+    def criar_secao_coletas(self, layout):
+        """Cria a seção de controle de coletas."""
+        # Label da seção
+        secao_label = QLabel("💰 Coletas da Pool Ativa")
+        secao_font = QFont()
+        secao_font.setPointSize(12)
+        secao_font.setBold(True)
+        secao_label.setFont(secao_font)
+        secao_label.setStyleSheet("color: #ffffff; margin: 5px 0;")
+        layout.addWidget(secao_label)
         
-        # Tabela
+        # Layout horizontal para botões de coleta
+        coletas_layout = QHBoxLayout()
+        
+        self.btn_nova_coleta = QPushButton("➕ Nova Coleta")
+        self.btn_nova_coleta.clicked.connect(self.nova_coleta)
+        self.btn_nova_coleta.setStyleSheet("background-color: #27ae60; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold;")
+        coletas_layout.addWidget(self.btn_nova_coleta)
+        
+        coletas_layout.addStretch()
+        
+        self.btn_exportar = QPushButton("📊 Exportar CSV")
+        self.btn_exportar.clicked.connect(self.exportar_dados)
+        self.btn_exportar.setStyleSheet("background-color: #9b59b6; color: white; padding: 10px 20px; border-radius: 5px;")
+        coletas_layout.addWidget(self.btn_exportar)
+        
+        self.btn_limpar = QPushButton("🗑️ Limpar Dados")
+        self.btn_limpar.clicked.connect(self.limpar_dados)
+        self.btn_limpar.setStyleSheet("background-color: #e67e22; color: white; padding: 10px 20px; border-radius: 5px;")
+        coletas_layout.addWidget(self.btn_limpar)
+        
+        layout.addLayout(coletas_layout)
+    
+    def criar_tabela(self, layout):
+        """Cria a tabela de dados."""
         self.tabela = QTableWidget()
         self.tabela.setColumnCount(4)
-        self.tabela.setHorizontalHeaderLabels([
-            "Data da Coleta", "Valor Coletado (USD)", "Taxa (%)", "Acumulado (USD)"
-        ])
+        self.tabela.setHorizontalHeaderLabels(['Data', 'Valor (USD)', 'Taxa (%)', 'Acumulado (USD)'])
         
-        # Configurar header da tabela
+        # Configurar largura das colunas
         header = self.tabela.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.Stretch)
+        header.setStretchLastSection(True)
+        self.tabela.setColumnWidth(0, 120)
+        self.tabela.setColumnWidth(1, 150)
+        self.tabela.setColumnWidth(2, 120)
         
-        main_layout.addWidget(self.tabela)
+        # Estilo da tabela
+        self.tabela.setAlternatingRowColors(True)
+        self.tabela.setStyleSheet("""
+            QTableWidget {
+                gridline-color: #bdc3c7;
+                background-color: white;
+                alternate-background-color: #ecf0f1;
+                color: #2c3e50;
+            }
+            QHeaderView::section {
+                background-color: #34495e;
+                color: white;
+                padding: 10px;
+                font-weight: bold;
+            }
+        """)
+        
+        layout.addWidget(self.tabela)
     
-    def setup_botoes(self, main_layout):
-        """Configura os botões de ação."""
-        botoes_layout = QHBoxLayout()
+    def criar_rodape(self, layout):
+        """Cria o rodapé com informações de totais."""
+        rodape_layout = QHBoxLayout()
         
-        # Botão exportar
-        btn_exportar = QPushButton("Exportar CSV")
-        btn_exportar.clicked.connect(self.exportar_dados)
-        botoes_layout.addWidget(btn_exportar)
+        self.label_total_coletas = QLabel("Total de Coletas: 0")
+        self.label_total_coletas.setStyleSheet("font-weight: bold; color: #2c3e50;")
+        rodape_layout.addWidget(self.label_total_coletas)
         
-        # Botão limpar dados
-        btn_limpar = QPushButton("Limpar Dados")
-        btn_limpar.clicked.connect(self.limpar_dados)
-        botoes_layout.addWidget(btn_limpar)
+        rodape_layout.addStretch()
         
-        botoes_layout.addStretch()
+        self.label_total_acumulado = QLabel("Total Acumulado: $0.00")
+        self.label_total_acumulado.setStyleSheet("font-weight: bold; color: #27ae60; font-size: 14px;")
+        rodape_layout.addWidget(self.label_total_acumulado)
         
-        # Botão sair
-        btn_sair = QPushButton("Sair")
-        btn_sair.clicked.connect(self.close)
-        botoes_layout.addWidget(btn_sair)
+        rodape_layout.addStretch()
         
-        main_layout.addLayout(botoes_layout)
+        self.label_taxa_acumulada = QLabel("Taxa Acumulada: 0.00%")
+        self.label_taxa_acumulada.setStyleSheet("font-weight: bold; color: #e74c3c; font-size: 14px;")
+        rodape_layout.addWidget(self.label_taxa_acumulada)
+        
+        layout.addLayout(rodape_layout)
     
-    def configurar_pool(self):
-        """Abre diálogo para configurar a pool."""
-        dialog = PoolConfigDialog(self, self.monitor.pool_config)
+    def atualizar_combo_pools(self):
+        """Atualiza o combo box com as pools disponíveis."""
+        self.combo_pools.clear()
         
-        if dialog.exec() == PoolConfigDialog.Accepted:
-            try:
-                config = dialog.get_config()
-                self.monitor.salvar_config_pool(config)
-                self.atualizar_info_pool()
-                self.monitor.recalcular_taxas()
-                self.carregar_dados_tabela()
-                QMessageBox.information(self, "Sucesso", "Configuração da pool salva com sucesso!")
-            except ValueError:
-                QMessageBox.warning(self, "Erro", "Por favor, insira um valor inicial válido.")
-            except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao salvar configuração: {e}")
-    
-    def atualizar_info_pool(self):
-        """Atualiza as informações da pool na interface."""
-        if self.monitor.pool_config:
-            config = self.monitor.pool_config
-            info_text = f"Pool: {config.tipo_moeda} | "
-            info_text += f"Abertura: {config.data_abertura} | "
-            info_text += f"Valor Inicial: ${config.valor_inicial:.2f}"
-            self.info_pool.setText(info_text)
-            self.info_pool.setStyleSheet("color: green; font-weight: bold;")
-            self.btn_config_pool.setText("Editar Pool")
-        else:
-            self.info_pool.setText("Pool não configurada")
-            self.info_pool.setStyleSheet("color: red; font-weight: bold;")
-            self.btn_config_pool.setText("Configurar Pool")
-    
-    def adicionar_coleta(self):
-        """Adiciona uma nova coleta."""
-        if not self.monitor.pool_config:
-            QMessageBox.warning(self, "Erro", "Configure a pool antes de adicionar coletas.")
+        pools = self.monitor.get_lista_pools()
+        if not pools:
+            self.combo_pools.addItem("Nenhuma pool configurada")
+            self.combo_pools.setEnabled(False)
             return
         
-        try:
-            data = self.data_coleta.date().toString("yyyy-MM-dd")
-            valor = float(self.valor_coleta.text())
-            
-            # Registrar coleta
-            self.monitor.registrar_nova_coleta(data, valor)
-            
-            # Atualizar tabela
-            self.carregar_dados_tabela()
-            
-            # Limpar campos
-            self.valor_coleta.clear()
-            self.data_coleta.setDate(QDate.currentDate())
-            
-            QMessageBox.information(self, "Sucesso", "Coleta adicionada com sucesso!")
-            
-        except ValueError:
-            QMessageBox.warning(self, "Erro", "Por favor, insira um valor válido.")
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao adicionar coleta: {e}")
+        self.combo_pools.setEnabled(True)
+        for pool in pools:
+            self.combo_pools.addItem(pool.get_display_name(), pool.pool_id)
+        
+        # Selecionar pool ativa
+        if self.monitor.pool_ativa_id:
+            for i in range(self.combo_pools.count()):
+                if self.combo_pools.itemData(i) == self.monitor.pool_ativa_id:
+                    self.combo_pools.setCurrentIndex(i)
+                    break
     
-    def carregar_dados_tabela(self):
-        """Carrega os dados do monitor na tabela."""
-        self.tabela.setRowCount(0)
+    def pool_selecionada_mudou(self):
+        """Chamado quando a pool selecionada muda."""
+        if self.combo_pools.currentData():
+            self.monitor.definir_pool_ativa(self.combo_pools.currentData())
+            self.atualizar_tabela()
+            self.atualizar_totais()
+    
+    def atualizar_interface(self):
+        """Atualiza toda a interface."""
+        self.atualizar_combo_pools()
+        self.atualizar_tabela()
+        self.atualizar_totais()
+        self.atualizar_botoes()
+    
+    def atualizar_botoes(self):
+        """Atualiza o estado dos botões."""
+        tem_pools = len(self.monitor.pools) > 0
+        tem_pool_ativa = self.monitor.get_pool_ativa() is not None
+        
+        self.btn_editar_pool.setEnabled(tem_pool_ativa)
+        self.btn_excluir_pool.setEnabled(tem_pools)
+        self.btn_nova_coleta.setEnabled(tem_pool_ativa)
+        self.btn_exportar.setEnabled(tem_pool_ativa)
+        self.btn_limpar.setEnabled(tem_pool_ativa)
+    
+    def atualizar_tabela(self):
+        """Atualiza a tabela com os dados da pool ativa."""
+        dados = self.monitor.get_dados_pool_ativa()
+        
+        self.tabela.setRowCount(len(dados))
         
         total_acumulado = 0
-        for i, coleta in enumerate(self.monitor.dados):
-            self.tabela.insertRow(i)
+        for i, coleta in enumerate(dados):
             total_acumulado += coleta.coleta_usd
             
             self.tabela.setItem(i, 0, QTableWidgetItem(coleta.data))
-            self.tabela.setItem(i, 1, QTableWidgetItem(f"{coleta.coleta_usd:.2f}"))
-            self.tabela.setItem(i, 2, QTableWidgetItem(f"{coleta.taxa_percentual:.4f}"))
-            self.tabela.setItem(i, 3, QTableWidgetItem(f"{total_acumulado:.2f}"))
+            self.tabela.setItem(i, 1, QTableWidgetItem(f"${coleta.coleta_usd:.2f}"))
+            self.tabela.setItem(i, 2, QTableWidgetItem(f"{coleta.taxa_percentual:.4f}%"))
+            self.tabela.setItem(i, 3, QTableWidgetItem(f"${total_acumulado:.2f}"))
     
-    def exportar_dados(self):
-        """Exporta os dados para um arquivo CSV."""
-        if not self.monitor.dados:
-            QMessageBox.information(self, "Info", "Não há dados para exportar.")
+    def atualizar_totais(self):
+        """Atualiza os labels de totais."""
+        dados = self.monitor.get_dados_pool_ativa()
+        total_coletas = len(dados)
+        total_acumulado = self.monitor.calcular_total_acumulado_pool_ativa()
+        taxa_acumulada = self.monitor.calcular_taxa_acumulada_pool_ativa()
+        
+        self.label_total_coletas.setText(f"Total de Coletas: {total_coletas}")
+        self.label_total_acumulado.setText(f"Total Acumulado: ${total_acumulado:.2f}")
+        self.label_taxa_acumulada.setText(f"Taxa Acumulada: {taxa_acumulada:.4f}%")
+    
+    def nova_pool(self):
+        """Abre diálogo para criar nova pool."""
+        dialog = PoolConfigDialog(self, modo="criar")
+        if dialog.exec() == QDialog.Accepted:
+            dados = dialog.get_dados()
+            try:
+                pool_id = self.monitor.criar_nova_pool(
+                    dados['nome'],
+                    dados['data_abertura'],
+                    dados['valor_inicial'],
+                    dados['tipo_moeda']
+                )
+                self.monitor.definir_pool_ativa(pool_id)
+                self.atualizar_interface()
+                QMessageBox.information(self, "Sucesso", "Pool criada com sucesso!")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao criar pool: {e}")
+    
+    def editar_pool(self):
+        """Abre diálogo para editar pool ativa."""
+        pool_config = self.monitor.get_pool_ativa()
+        if not pool_config:
+            QMessageBox.warning(self, "Aviso", "Nenhuma pool selecionada!")
             return
         
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"coletas_export_{timestamp}.csv"
-        
-        try:
-            self.monitor.exportar_dados(filename)
-            QMessageBox.information(self, "Sucesso", f"Dados exportados para {filename}")
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao exportar dados: {e}")
+        dialog = PoolConfigDialog(self, pool_config, modo="editar")
+        if dialog.exec() == QDialog.Accepted:
+            dados = dialog.get_dados()
+            try:
+                self.monitor.atualizar_pool(
+                    pool_config.pool_id,
+                    dados['nome'],
+                    dados['data_abertura'],
+                    dados['valor_inicial'],
+                    dados['tipo_moeda']
+                )
+                self.atualizar_interface()
+                QMessageBox.information(self, "Sucesso", "Pool atualizada com sucesso!")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao atualizar pool: {e}")
     
-    def limpar_dados(self):
-        """Limpa todos os dados de coletas."""
-        reply = QMessageBox.question(
-            self, "Confirmar", 
-            "Tem certeza que deseja limpar todos os dados de coletas?",
-            QMessageBox.Yes | QMessageBox.No
+    def excluir_pool(self):
+        """Abre diálogo para excluir pool."""
+        pools = self.monitor.get_lista_pools()
+        if not pools:
+            QMessageBox.warning(self, "Aviso", "Nenhuma pool disponível para exclusão!")
+            return
+        
+        dialog = SelecionarPoolDialog(self, pools)
+        if dialog.exec() == QDialog.Accepted:
+            pool_id = dialog.get_pool_selecionada()
+            if pool_id:
+                try:
+                    self.monitor.excluir_pool(pool_id)
+                    self.atualizar_interface()
+                    QMessageBox.information(self, "Sucesso", "Pool excluída com sucesso!")
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir pool: {e}")
+    
+    def nova_coleta(self):
+        """Abre diálogo para nova coleta."""
+        if not self.monitor.get_pool_ativa():
+            QMessageBox.warning(self, "Aviso", "Configure uma pool antes de registrar coletas!")
+            return
+        
+        dialog = NovaColetaDialog(self)
+        if dialog.exec() == QDialog.Accepted:
+            dados = dialog.get_dados()
+            try:
+                self.monitor.registrar_nova_coleta(dados['data'], dados['valor'])
+                self.atualizar_tabela()
+                self.atualizar_totais()
+                QMessageBox.information(self, "Sucesso", "Coleta registrada com sucesso!")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao registrar coleta: {e}")
+    
+    def exportar_dados(self):
+        """Exporta dados para CSV."""
+        if not self.monitor.get_pool_ativa():
+            QMessageBox.warning(self, "Aviso", "Nenhuma pool ativa para exportar!")
+            return
+        
+        pool_config = self.monitor.get_pool_ativa()
+        nome_sugerido = f"coletas_{pool_config.nome.replace(' ', '_')}.csv"
+        
+        arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Exportar Dados",
+            nome_sugerido,
+            "Arquivos CSV (*.csv)"
         )
         
-        if reply == QMessageBox.Yes:
+        if arquivo:
             try:
-                self.monitor.limpar_dados()
-                self.carregar_dados_tabela()
+                self.monitor.exportar_dados_pool_ativa(arquivo)
+                QMessageBox.information(self, "Sucesso", f"Dados exportados para: {arquivo}")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao exportar dados: {e}")
+    
+    def limpar_dados(self):
+        """Limpa todos os dados da pool ativa."""
+        if not self.monitor.get_pool_ativa():
+            QMessageBox.warning(self, "Aviso", "Nenhuma pool ativa!")
+            return
+        
+        pool_config = self.monitor.get_pool_ativa()
+        resposta = QMessageBox.question(
+            self,
+            "Confirmar Limpeza",
+            f"Tem certeza que deseja limpar todos os dados da pool '{pool_config.nome}'?\\n\\nEsta ação não pode ser desfeita!",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if resposta == QMessageBox.Yes:
+            try:
+                self.monitor.limpar_dados_pool_ativa()
+                self.atualizar_tabela()
+                self.atualizar_totais()
                 QMessageBox.information(self, "Sucesso", "Dados limpos com sucesso!")
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Erro ao limpar dados: {e}")

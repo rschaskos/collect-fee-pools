@@ -1,57 +1,58 @@
-# Monitor de Coletas - Pool de Liquidez
+# 🏊‍♂️ Monitor de Coletas - Pools de Liquidez
 
-Uma aplicação desktop moderna para monitorar e gerenciar coletas de taxas em pools de liquidez de criptomoedas.
+Uma aplicação moderna e intuitiva para monitorar coletas de taxas de múltiplas pools de liquidez, desenvolvida em Python com interface gráfica PySide6.
 
-## 🚀 Funcionalidades
+## ✨ Funcionalidades Principais
 
-- **Interface Gráfica Moderna**: Desenvolvida com PySide6
-- **Configuração de Pool**: Defina data de abertura, valor inicial e tipo de moeda
-- **Registro de Coletas**: Adicione coletas com cálculo automático de taxas percentuais
-- **Visualização de Dados**: Tabela com histórico completo e totais acumulados
-- **Exportação**: Exporte dados para CSV com informações detalhadas
-- **Persistência Segura**: Dados salvos automaticamente no diretório apropriado do sistema
+### 🏊‍♂️ **Gerenciamento de Múltiplas Pools**
+- ➕ **Criar pools ilimitadas** com configurações individuais
+- ✏️ **Editar pools existentes** (nome, par de moedas, valor inicial)
+- 🗑️ **Excluir pools** com confirmação de segurança
+- 🔄 **Alternar entre pools** via dropdown moderno
 
-## 📋 Requisitos
+### 💰 **Monitoramento de Coletas**
+- 📊 **Registrar coletas** com data e valor
+- 🧮 **Cálculo automático de taxas** baseado no valor inicial
+- 📈 **Totais acumulados** por pool
+- 📋 **Histórico completo** de todas as coletas
 
-- Python 3.8 ou superior
-- PySide6
-- Pillow (para suporte a ícones)
+### 🎨 **Interface Moderna**
+- 🎯 **Design clean** com dropdown para seleção de pools
+- 🌈 **Cores profissionais** e tipografia otimizada
+- 📱 **Layout responsivo** e intuitivo
+- 🔘 **Botões com ícones** para ações rápidas
 
-## 🛠️ Instalação para Desenvolvimento
+### 📁 **Gestão de Dados**
+- 💾 **Persistência automática** em arquivos CSV
+- 🔄 **Migração automática** de dados antigos
+- 📊 **Exportação personalizada** por pool
+- 🗂️ **Arquivos separados** para cada pool
 
-1. **Clone o repositório:**
+## 🚀 Instalação
+
+### Pré-requisitos
 ```bash
-git clone https://github.com/seu-usuario/collect-fee-pools.git
-cd collect-fee-pools
+Python 3.8+
+PySide6
 ```
 
-2. **Crie um ambiente virtual:**
+### Instalação das Dependências
 ```bash
-python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
+pip install PySide6
 ```
 
-3. **Instale as dependências:**
-```bash
-pip install PySide6 Pillow
-```
-
-4. **Execute a aplicação:**
+### Executar a Aplicação
 ```bash
 python main.py
 ```
 
-## 📦 Criando Executável
+## 📦 Gerar Executável (macOS)
 
-### macOS
-
-1. **Instale o PyInstaller:**
 ```bash
+# Instalar PyInstaller
 pip install pyinstaller
-```
 
-2. **Crie o executável:**
-```bash
+# Gerar aplicação
 pyinstaller --clean --onefile --windowed main.py \
     --add-data "gui:gui" \
     --add-data "utils:utils" \
@@ -59,113 +60,138 @@ pyinstaller --clean --onefile --windowed main.py \
     --name "collect-fee"
 ```
 
-3. **O app será criado em:**
-```
-dist/collect-fee.app
-```
-
-### Windows
-
-1. **Instale o PyInstaller:**
-```bash
-pip install pyinstaller
-```
-
-2. **Crie o executável:**
-```bash
-pyinstaller --clean --onefile --windowed main.py ^
-    --add-data "gui;gui" ^
-    --add-data "utils;utils" ^
-    --icon=icon/favicon.ico ^
-    --name "collect-fee"
-```
-
-3. **O executável será criado em:**
-```
-dist/collect-fee.exe
-```
-
-## 📁 Estrutura do Projeto
+## 🏗️ Estrutura do Projeto
 
 ```
-collect-fee-pools/
-├── main.py                 # Ponto de entrada da aplicação
+monitor-coletas/
+├── main.py                    # Ponto de entrada da aplicação
 ├── core/
 │   ├── __init__.py
-│   └── monitor.py          # Lógica principal de negócio
+│   └── monitor.py            # Lógica principal (multi-pool)
 ├── models/
 │   ├── __init__.py
-│   ├── coleta.py           # Modelo de dados para coletas
-│   └── pool_config.py      # Modelo de configuração da pool
+│   ├── coleta.py            # Modelo de dados para coletas
+│   └── pool_config.py       # Modelo de configuração de pools
 ├── gui/
 │   ├── __init__.py
-│   ├── main_window.py      # Janela principal
-│   └── dialogs.py          # Diálogos de configuração
+│   ├── main_window.py       # Interface principal com dropdown
+│   └── dialogs.py           # Diálogos para pools e coletas
 ├── utils/
 │   ├── __init__.py
-│   └── paths.py            # Utilitários para caminhos de arquivos
+│   └── paths.py             # Utilitários para caminhos de arquivos
 ├── icon/
-│   ├── favicon.ico         # Ícone para Windows
-│   └── favicon.icns        # Ícone para macOS
+│   └── favicon.icns         # Ícone da aplicação
 └── README.md
 ```
 
-## 💾 Armazenamento de Dados
+## 💾 Estrutura de Dados
 
-Os dados são armazenados automaticamente nos seguintes locais:
-
-- **macOS**: `~/Library/Application Support/Monitor de Coletas/`
-- **Windows**: `%USERPROFILE%/AppData/Local/Monitor de Coletas/`
-- **Linux**: `~/.config/monitor-coletas/`
-
-### Arquivos de Dados:
-- `coletas.csv`: Histórico de todas as coletas
-- `pool_config.csv`: Configuração da pool (data de abertura, valor inicial, moeda)
-
-## 🔄 Migração Automática
-
-A aplicação migra automaticamente dados existentes do diretório do projeto para o diretório de dados do usuário na primeira execução.
-
-## 📊 Formato dos Dados
-
-### Arquivo de Coletas (coletas.csv)
-```csv
-Data,Coleta_USD,Taxa_Percentual,Total_Acumulado_USD
-2024-01-15,125.50,2.5100,125.50
-2024-01-16,98.75,1.9750,224.25
+### Arquivos Gerados
+```
+~/Library/Application Support/Monitor de Coletas/
+├── pools_config.csv              # Configurações de todas as pools
+├── pool_[UUID]_coletas.csv       # Coletas da pool 1
+├── pool_[UUID]_coletas.csv       # Coletas da pool 2
+└── pool_[UUID]_coletas.csv       # Coletas da pool N
 ```
 
-### Arquivo de Configuração (pool_config.csv)
+### Formato dos Dados
+
+**pools_config.csv:**
 ```csv
-data_abertura,valor_inicial,tipo_moeda
-2024-01-01,5000.0,USDC/ETH
+pool_id,nome,data_abertura,valor_inicial,tipo_moeda
+uuid-1,Pool Principal,15/01/2024,1000.00,USDC/ETH
+uuid-2,Pool Secundária,20/01/2024,2000.00,DAI/USDC
+```
+
+**pool_[UUID]_coletas.csv:**
+```csv
+Data,Coleta_USD,Taxa_Percentual,Total_Acumulado_USD
+15/01/2024,125.50,12.5500,125.50
+20/01/2024,89.30,8.9300,214.80
 ```
 
 ## 🎯 Como Usar
 
-1. **Primeira Execução**: Configure sua pool definindo:
-   - Data de abertura
-   - Valor inicial investido
-   - Tipo de moeda/par
+### 1️⃣ **Primeira Execução**
+- Execute a aplicação
+- Dados antigos serão migrados automaticamente
+- Crie sua primeira pool clicando em "➕ Nova Pool"
 
-2. **Registrar Coletas**:
-   - Clique em "Nova Coleta"
-   - Insira a data e valor coletado
-   - A taxa percentual é calculada automaticamente
+### 2️⃣ **Gerenciar Pools**
+```
+🏊‍♂️ [Pool Principal - USDC/ETH  ▼] ➕ ✏️ 🗑️
+```
+- **Dropdown**: Selecione a pool ativa
+- **➕ Nova Pool**: Criar nova pool
+- **✏️ Editar**: Modificar pool selecionada
+- **🗑️ Excluir**: Remover pool (com confirmação)
 
-3. **Visualizar Dados**:
-   - Tabela mostra histórico completo
-   - Totais acumulados são atualizados automaticamente
+### 3️⃣ **Registrar Coletas**
+- Selecione a pool desejada no dropdown
+- Clique em "➕ Nova Coleta"
+- Preencha data e valor
+- Taxa será calculada automaticamente
 
-4. **Exportar Dados**:
-   - Use "Exportar" para salvar relatório em CSV
-   - Inclui configuração da pool e dados detalhados
+### 4️⃣ **Exportar Dados**
+- Selecione a pool no dropdown
+- Clique em "📊 Exportar CSV"
+- Escolha local para salvar
 
-## 🛡️ Segurança
+## 🔄 Migração de Dados
 
-- Dados armazenados localmente no computador do usuário
-- Nenhuma informação é enviada para servidores externos
-- Backup automático durante migrações
+A aplicação detecta automaticamente dados do formato antigo e migra para o novo sistema:
+
+- ✅ **pool_config.csv** → **pools_config.csv**
+- ✅ **coletas.csv** → **pool_[UUID]_coletas.csv**
+- ✅ **Configurações preservadas**
+- ✅ **Histórico mantido**
+
+## 🎨 Capturas de Tela
+
+### Interface Principal
+```
+┌─────────────────────────────────────────────────────┐
+│        🏊‍♂️ Monitor de Coletas - Pools de Liquidez        │
+├─────────────────────────────────────────────────────┤
+│ 🏊 Gerenciamento de Pools                           │
+│ Pool Ativa: [USDC/ETH - Uniswap    ▼] ➕ ✏️ 🗑️      │
+├─────────────────────────────────────────────────────┤
+│ 💰 Coletas da Pool Ativa                           │
+│ [➕ Nova Coleta]              [📊 Exportar] [🗑️ Limpar] │
+├─────────────────────────────────────────────────────┤
+│ Data      │ Valor (USD) │ Taxa (%)  │ Acumulado    │
+│ 15/01     │ $125.50     │ 12.5500%  │ $125.50      │
+│ 20/01     │ $89.30      │ 8.9300%   │ $214.80      │
+├─────────────────────────────────────────────────────┤
+│ Total: 2 coletas    $214.80    Taxa: 21.48%        │
+└─────────────────────────────────────────────────────┘
+```
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Python 3.8+** - Linguagem principal
+- **PySide6** - Interface gráfica moderna
+- **CSV** - Persistência de dados
+- **UUID** - Identificadores únicos
+- **PyInstaller** - Geração de executáveis
+
+## 📈 Funcionalidades Avançadas
+
+### 🔢 **Cálculos Automáticos**
+- Taxa percentual baseada no valor inicial
+- Totais acumulados por pool
+- Soma de taxas por período
+
+### 🔒 **Segurança de Dados**
+- Backup automático antes de migrações
+- Confirmações para ações destrutivas
+- Validação de dados de entrada
+
+### ⚡ **Performance**
+- Carregamento sob demanda
+- Cache de dados da pool ativa
+- Otimização para múltiplas pools
 
 ## 🤝 Contribuindo
 
@@ -175,23 +201,35 @@ data_abertura,valor_inicial,tipo_moeda
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
+## 📝 Changelog
+
+### v2.0.0 - Multi-Pool Support
+- ✨ Suporte a múltiplas pools simultâneas
+- 🎨 Interface modernizada com dropdown
+- 🏗️ Arquitetura refatorada para escalabilidade
+- 🔄 Migração automática de dados antigos
+- 📁 Sistema de arquivos separados por pool
+
+### v1.0.0 - Initial Release
+- 💰 Monitoramento de pool única
+- 📊 Cálculo de taxas automático
+- 💾 Persistência em CSV
+- 🎨 Interface gráfica básica
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-## 🐛 Reportar Problemas
+## 🆘 Suporte
 
-Se encontrar algum problema, por favor abra uma [issue](https://github.com/seu-usuario/collect-fee-pools/issues) com:
+Para dúvidas, sugestões ou problemas:
 
-- Descrição detalhada do problema
-- Passos para reproduzir
-- Sistema operacional e versão do Python
-- Screenshots (se aplicável)
-
-## 📞 Suporte
-
-Para dúvidas ou suporte, entre em contato através das issues do GitHub.
+1. 🐛 **Issues**: Abra uma issue no GitHub
+2. 💬 **Discussões**: Use as discussões do repositório
+3. 📧 **Email**: Entre em contato diretamente
 
 ---
 
-**Desenvolvido com ❤️ para a comunidade DeFi**
+**Desenvolvido para a comunidade DeFi**
+
+*Monitore suas pools de liquidez com eficiência e estilo!* 🚀
