@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                                QPushButton, QTableWidget, QTableWidgetItem, QLabel,
                                QMessageBox, QFileDialog, QComboBox, QFrame, QDialog)
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QIcon
+from PySide6.QtGui import QFont, QIcon, QPalette
 
 from core.monitor import MonitorLiquidez
 from gui.dialogs import PoolConfigDialog, NovaColetaDialog, SelecionarPoolDialog
@@ -60,7 +60,8 @@ class MonitorColetasApp(QMainWindow):
         titulo_font.setBold(True)
         titulo_label.setFont(titulo_font)
         titulo_label.setAlignment(Qt.AlignCenter)
-        titulo_label.setStyleSheet("color: #ffffff; margin: 10px 0;")
+        cor = self.palette().color(QPalette.WindowText).name()
+        titulo_label.setStyleSheet(f"color: {cor}; margin: 10px 0;")
         layout.addWidget(titulo_label)
     
     def criar_secao_pools(self, layout):
@@ -71,7 +72,8 @@ class MonitorColetasApp(QMainWindow):
         secao_font.setPointSize(12)
         secao_font.setBold(True)
         secao_label.setFont(secao_font)
-        secao_label.setStyleSheet("color: #ffffff; margin: 5px 0;")
+        cor = self.palette().color(QPalette.WindowText).name()
+        secao_label.setStyleSheet(f"color: {cor}; margin: 10px 0;")
         layout.addWidget(secao_label)
         
         # Layout horizontal para controles de pool
@@ -114,7 +116,8 @@ class MonitorColetasApp(QMainWindow):
         secao_font.setPointSize(12)
         secao_font.setBold(True)
         secao_label.setFont(secao_font)
-        secao_label.setStyleSheet("color: #ffffff; margin: 5px 0;")
+        cor = self.palette().color(QPalette.WindowText).name()
+        secao_label.setStyleSheet(f"color: {cor}; margin: 10px 0;")
         layout.addWidget(secao_label)
         
         # Layout horizontal para botões de coleta
