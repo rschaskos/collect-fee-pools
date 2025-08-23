@@ -280,3 +280,98 @@ class SelecionarPoolDialog(QDialog):
     def get_pool_selecionada(self):
         """Retorna o ID da pool selecionada."""
         return self.pool_selecionada
+
+
+class EditarColetaDialog(QDialog):
+    """Diálogo para editar uma coleta existente."""
+    
+    def __init__(self, parent=None, coleta=None):
+        super().__init__(parent)
+        self.coleta = coleta
+        self.setup_ui()
+        if coleta:
+            self.carregar_dados_coleta()
+    
+    def setup_ui(self):
+        """Configura a interface do diálogo."""
+        self.setWindowTitle("Editar Coleta")
+        self.setModal(True)
+        self.resize(350, 200)
+        
+        # Layout principal
+        layout = QVBoxLayout(self)
+        
+        # Título
+        titulo_label = QLabel("Editar Coleta")
+        titulo_font = QFont()
+        titulo_font.setPointSize(14)
+        titulo_font.setBold(True)
+        titulo_label.setFont(titulo_font)
+        titulo_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(titulo_label)
+        
+        # Formulário
+        form_layout = QFormLayout()
+        
+        # Data da Coleta
+        self.data_coleta_edit = QDateEdit()
+        self.data_coleta_edit.setDate(QDate.currentDate())
+        self.data_coleta_edit.setCalendarPopup(True)
+        form_layout.addRow("Data da Coleta:", self.data_coleta_edit)
+        
+        # Valor Coletado
+        self.valor_coleta_edit = QDoubleSpinBox()
+        self.valor_coleta_edit.setRange(0.01, 999999999.99)
+        self.valor_coleta_edit.setDecimals(2)
+        self.valor_coleta_edit.setSuffix(" USD")
+        self.valor_coleta_edit.setValue(100.00)
+        form_layout.addRow("Valor Coletado:", self.valor_coleta_edit)
+        
+        layout.addLayout(form_layout)
+        
+        # Botões
+        botoes_layout = QHBoxLayout()
+        
+        self.btn_cancelar = QPushButton("Cancelar")
+        self.btn_cancelar.clicked.connect(self.reject)
+        
+        self.btn_confirmar = QPushButton("Salvar Alterações")
+        self.btn_confirmar.clicked.connect(self.confirmar)
+        self.btn_confirmar.setDefault(True)
+        
+        botoes_layout.addWidget(self.btn_cancelar)
+        botoes_layout.addWidget(self.btn_confirmar)
+        
+        layout.addLayout(botoes_layout)
+    
+    def carregar_dados_coleta(self):
+        """Carrega os dados da coleta para edição."""
+        if self.coleta:
+            # Converter data string para QDate
+            try:
+                data_parts = self.coleta.data.split('/')
+                if len(data_parts) == 3:
+                    dia, mes, ano = map(int, data_parts)
+                    self.data_coleta_edit.setDate(QDate(ano, mes, dia))
+            except:
+                self.data_coleta_edit.setDate(QDate.currentDate())
+            
+            # Definir valor
+            self.valor_coleta_edit.setValue(self.coleta.coleta_usd)
+    
+    def confirmar(self):
+        """Valida e confirma os dados."""
+        if self.valor_coleta_edit.value() <= 0:
+            QMessageBox.warning(self, "Erro", "Valor da coleta deve ser maior que zero!")
+            return
+        
+        self.accept()
+    
+    def get_dados(self):
+        """Retorna os dados preenchidos."""
+        data_coleta = self.data_coleta_edit.date().toString("dd/MM/yyyy")
+        
+        return {
+            'data': data_coleta,
+            'valor': self.valor_coleta_edit.value()
+        }

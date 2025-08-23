@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QIcon, QPalette, QAction
 
 from core.monitor import MonitorLiquidez
-from gui.dialogs import PoolConfigDialog, NovaColetaDialog, SelecionarPoolDialog
+from gui.dialogs import PoolConfigDialog, NovaColetaDialog, SelecionarPoolDialog, EditarColetaDialog
 from gui.about_dialog import AboutDialog
 
 class MonitorColetasApp(QMainWindow):
@@ -257,6 +257,13 @@ class MonitorColetasApp(QMainWindow):
         self.tabela.setColumnWidth(2, 130)  # Valor USD
         self.tabela.setColumnWidth(3, 100)  # Taxa %
         
+        # Habilitar seleção de linhas inteiras
+        self.tabela.setSelectionBehavior(QTableWidget.SelectRows)
+        
+        # Habilitar menu contextual
+        self.tabela.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tabela.customContextMenuRequested.connect(self.mostrar_menu_contextual)
+        
         # Estilo da tabela
         self.tabela.setAlternatingRowColors(True)
         self.tabela.setStyleSheet("""
@@ -493,3 +500,78 @@ class MonitorColetasApp(QMainWindow):
                 QMessageBox.information(self, "Sucesso", "Dados limpos com sucesso!")
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Erro ao limpar dados: {e}")
+    
+    def mostrar_menu_contextual(self, position):
+        """Mostra menu contextual ao clicar com botão direito na tabela."""
+        if not self.tabela.itemAt(position):
+            return
+        
+        linha_selecionada = self.tabela.rowAt(position.y())
+        if linha_selecionada < 0:
+            return
+        
+        # Criar menu contextual
+        menu = QMenu(self)
+        
+        # Ação editar coleta
+        acao_editar = QAction("✏️ Editar Coleta", self)
+        acao_editar.triggered.connect(lambda: self.editar_coleta(linha_selecionada))
+        menu.addAction(acao_editar)
+        
+        # Separador
+        menu.addSeparator()
+        
+        # Ação excluir coleta
+        acao_excluir = QAction("🗑️ Excluir Coleta", self)
+        acao_excluir.triggered.connect(lambda: self.excluir_coleta(linha_selecionada))
+        menu.addAction(acao_excluir)
+        
+        # Mostrar menu na posição do cursor
+        menu.exec(self.tabela.mapToGlobal(position))
+    
+    def editar_coleta(self, linha_index):
+        """Edita uma coleta específica."""
+        dados = self.monitor.get_dados_pool_ativa()
+        if linha_index >= len(dados):
+            return
+        
+        coleta = dados[linha_index]
+        
+        # Usar o mesmo diálogo de nova coleta, mas preenchido
+        dialog = EditarColetaDialog(self, coleta)
+        if dialog.exec() == QDialog.Accepted:
+            novos_dados = dialog.get_dados()
+            try:
+                # Atualizar a coleta
+                self.monitor.atualizar_coleta(linha_index, novos_dados['data'], novos_dados['valor'])
+                self.atualizar_tabela()
+                self.atualizar_totais()
+                QMessageBox.information(self, "Sucesso", "Coleta atualizada com sucesso!")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao atualizar coleta: {e}")
+    
+    def excluir_coleta(self, linha_index):
+        """Exclui uma coleta específica."""
+        dados = self.monitor.get_dados_pool_ativa()
+        if linha_index >= len(dados):
+            return
+        
+        coleta = dados[linha_index]
+        
+        # Confirmar exclusão
+        resposta = QMessageBox.question(
+            self,
+            "Confirmar Exclusão",
+            f"Tem certeza que deseja excluir a coleta do dia {coleta.data}?\\n\\nValor: ${coleta.coleta_usd:.2f}\\nEsta ação não pode ser desfeita!",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if resposta == QMessageBox.Yes:
+            try:
+                self.monitor.excluir_coleta(linha_index)
+                self.atualizar_tabela()
+                self.atualizar_totais()
+                QMessageBox.information(self, "Sucesso", "Coleta excluída com sucesso!")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir coleta: {e}")

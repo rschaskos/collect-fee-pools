@@ -382,3 +382,74 @@ class MonitorLiquidez:
     def get_lista_pools(self) -> List[PoolConfig]:
         """Retorna lista de todas as pools."""
         return list(self.pools.values())
+    
+    def excluir_coleta(self, linha_index: int) -> None:
+        """Exclui uma coleta específica da pool ativa."""
+        if not self.pool_ativa_id or self.pool_ativa_id not in self.dados_pools:
+            raise Exception("Nenhuma pool ativa selecionada")
+        
+        dados = self.dados_pools[self.pool_ativa_id]
+        if linha_index < 0 or linha_index >= len(dados):
+            raise Exception("Índice de coleta inválido")
+        
+        # Remover a coleta
+        dados.pop(linha_index)
+        
+        # Recalcular dias para as coletas seguintes
+        self._recalcular_dias_pool(self.pool_ativa_id)
+        
+        # Salvar as mudanças
+        self.salvar_dados_pool(self.pool_ativa_id)
+
+    def atualizar_coleta(self, linha_index: int, nova_data: str, novo_valor: float) -> None:
+        """Atualiza uma coleta específica da pool ativa."""
+        if not self.pool_ativa_id or self.pool_ativa_id not in self.dados_pools:
+            raise Exception("Nenhuma pool ativa selecionada")
+        
+        dados = self.dados_pools[self.pool_ativa_id]
+        if linha_index < 0 or linha_index >= len(dados):
+            raise Exception("Índice de coleta inválido")
+        
+        pool_config = self.get_pool_ativa()
+        if not pool_config:
+            raise Exception("Configuração da pool não encontrada")
+        
+        # Atualizar dados da coleta
+        coleta = dados[linha_index]
+        coleta.data = nova_data
+        coleta.coleta_usd = novo_valor
+        coleta.taxa_percentual = (novo_valor / pool_config.valor_inicial) * 100
+        
+        # Recalcular dias para todas as coletas (a ordem pode ter mudado)
+        self._recalcular_dias_pool(self.pool_ativa_id)
+        
+        # Salvar as mudanças
+        self.salvar_dados_pool(self.pool_ativa_id)
+
+    def _recalcular_dias_pool(self, pool_id: str) -> None:
+        """Recalcula os dias de todas as coletas de uma pool."""
+        pool_config = self.pools.get(pool_id)
+        dados = self.dados_pools.get(pool_id, [])
+        
+        if not pool_config or not dados:
+            return
+        
+        # Ordenar coletas por data para garantir ordem correta
+        try:
+            dados.sort(key=lambda x: datetime.strptime(x.data, "%d/%m/%Y"))
+        except ValueError:
+            print("Erro ao ordenar coletas por data")
+            return
+        
+        # Recalcular dias para cada coleta
+        for i, coleta in enumerate(dados):
+            if i == 0:
+                # Primeira coleta: dias desde data de abertura da pool
+                coleta.dias = self._calcular_dias_entre_datas(pool_config.data_abertura, coleta.data)
+            else:
+                # Demais coletas: dias desde a coleta anterior
+                coleta_anterior = dados[i-1]
+                coleta.dias = self._calcular_dias_entre_datas(coleta_anterior.data, coleta.data)
+        
+        # Atualizar a lista ordenada
+        self.dados_pools[pool_id] = dados
