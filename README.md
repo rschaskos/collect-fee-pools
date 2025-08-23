@@ -2,33 +2,33 @@
 
 Uma aplicação moderna e intuitiva para monitorar coletas de taxas de múltiplas pools de liquidez, desenvolvida em Python com interface gráfica PySide6.
 
-## ✨ Funcionalidades Principais
+## Funcionalidades Principais
 
-### 🏊‍♂️ **Gerenciamento de Múltiplas Pools**
-- ➕ **Criar pools ilimitadas** com configurações individuais
-- ✏️ **Editar pools existentes** (nome, par de moedas, valor inicial)
-- 🗑️ **Excluir pools** com confirmação de segurança
-- 🔄 **Alternar entre pools** via dropdown moderno
+### **Gerenciamento de Múltiplas Pools**
+- **Criar pools ilimitadas** com configurações individuais
+- **Editar pools existentes** (nome, par de moedas, valor inicial)
+- **Excluir pools** com confirmação de segurança
+- **Alternar entre pools** via dropdown moderno
 
-### 💰 **Monitoramento de Coletas**
-- 📊 **Registrar coletas** com data e valor
-- 🧮 **Cálculo automático de taxas** baseado no valor inicial
-- 📈 **Totais acumulados** por pool
-- 📋 **Histórico completo** de todas as coletas
+### **Monitoramento de Coletas**
+- **Registrar coletas** com data e valor
+- **Cálculo automático de taxas** baseado no valor inicial
+- **Totais acumulados** por pool
+- **Histórico completo** de todas as coletas
 
-### 🎨 **Interface Moderna**
-- 🎯 **Design clean** com dropdown para seleção de pools
-- 🌈 **Cores profissionais** e tipografia otimizada
-- 📱 **Layout responsivo** e intuitivo
-- 🔘 **Botões com ícones** para ações rápidas
+### **Interface Moderna**
+- **Design clean** com dropdown para seleção de pools
+- **Cores profissionais** e tipografia otimizada
+- **Layout responsivo** e intuitivo
+- **Botões com ícones** para ações rápidas
 
-### 📁 **Gestão de Dados**
-- 💾 **Persistência automática** em arquivos CSV
-- 🔄 **Migração automática** de dados antigos
-- 📊 **Exportação personalizada** por pool
-- 🗂️ **Arquivos separados** para cada pool
+### **Gestão de Dados**
+- **Persistência automática** em arquivos CSV
+- **Migração automática** de dados antigos
+- **Exportação personalizada** por pool
+- **Arquivos separados** para cada pool
 
-## 🚀 Instalação
+## Instalação
 
 ### Pré-requisitos
 ```bash
@@ -46,7 +46,7 @@ pip install PySide6
 python main.py
 ```
 
-## 📦 Gerar Executável (macOS)
+## Gerar Executável (macOS)
 
 ```bash
 # Instalar PyInstaller
@@ -60,7 +60,7 @@ pyinstaller --clean --onefile --windowed main.py \
     --name "collect-fee"
 ```
 
-## 🏗️ Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 monitor-coletas/
@@ -111,7 +111,7 @@ Data,Coleta_USD,Taxa_Percentual,Total_Acumulado_USD
 20/01/2024,89.30,8.9300,214.80
 ```
 
-## 🎯 Como Usar
+## Como Usar
 
 ### 1️⃣ **Primeira Execução**
 - Execute a aplicação
@@ -123,9 +123,9 @@ Data,Coleta_USD,Taxa_Percentual,Total_Acumulado_USD
 🏊‍♂️ [Pool Principal - USDC/ETH  ▼] ➕ ✏️ 🗑️
 ```
 - **Dropdown**: Selecione a pool ativa
-- **➕ Nova Pool**: Criar nova pool
-- **✏️ Editar**: Modificar pool selecionada
-- **🗑️ Excluir**: Remover pool (com confirmação)
+- **Nova Pool**: Criar nova pool
+- **Editar**: Modificar pool selecionada
+- **Excluir**: Remover pool (com confirmação)
 
 ### 3️⃣ **Registrar Coletas**
 - Selecione a pool desejada no dropdown
@@ -147,7 +147,7 @@ A aplicação detecta automaticamente dados do formato antigo e migra para o nov
 - ✅ **Configurações preservadas**
 - ✅ **Histórico mantido**
 
-## 🎨 Capturas de Tela
+## Capturas de Tela
 
 ### Interface Principal
 ```
@@ -168,7 +168,7 @@ A aplicação detecta automaticamente dados do formato antigo e migra para o nov
 └─────────────────────────────────────────────────────┘
 ```
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Python 3.8+** - Linguagem principal
 - **PySide6** - Interface gráfica moderna
@@ -176,24 +176,24 @@ A aplicação detecta automaticamente dados do formato antigo e migra para o nov
 - **UUID** - Identificadores únicos
 - **PyInstaller** - Geração de executáveis
 
-## 📈 Funcionalidades Avançadas
+## Funcionalidades Avançadas
 
-### 🔢 **Cálculos Automáticos**
+### **Cálculos Automáticos**
 - Taxa percentual baseada no valor inicial
 - Totais acumulados por pool
 - Soma de taxas por período
 
-### 🔒 **Segurança de Dados**
+### **Segurança de Dados**
 - Backup automático antes de migrações
 - Confirmações para ações destrutivas
 - Validação de dados de entrada
 
-### ⚡ **Performance**
+### **Performance**
 - Carregamento sob demanda
 - Cache de dados da pool ativa
 - Otimização para múltiplas pools
 
-## 🤝 Contribuindo
+## Contribuindo
 
 1. Fork o projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
@@ -201,22 +201,22 @@ A aplicação detecta automaticamente dados do formato antigo e migra para o nov
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 📝 Changelog
+## Changelog
 
 ### v2.0.0 - Multi-Pool Support
-- ✨ Suporte a múltiplas pools simultâneas
-- 🎨 Interface modernizada com dropdown
-- 🏗️ Arquitetura refatorada para escalabilidade
-- 🔄 Migração automática de dados antigos
-- 📁 Sistema de arquivos separados por pool
+- Suporte a múltiplas pools simultâneas
+- Interface modernizada com dropdown
+- Arquitetura refatorada para escalabilidade
+- Migração automática de dados antigos
+- Sistema de arquivos separados por pool
 
 ### v1.0.0 - Initial Release
-- 💰 Monitoramento de pool única
-- 📊 Cálculo de taxas automático
-- 💾 Persistência em CSV
-- 🎨 Interface gráfica básica
+- Monitoramento de pool única
+- Cálculo de taxas automático
+- Persistência em CSV
+- Interface gráfica básica
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
@@ -224,9 +224,9 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Para dúvidas, sugestões ou problemas:
 
-1. 🐛 **Issues**: Abra uma issue no GitHub
-2. 💬 **Discussões**: Use as discussões do repositório
-3. 📧 **Email**: Entre em contato diretamente
+1. **Issues**: Abra uma issue no GitHub
+2. **Discussões**: Use as discussões do repositório
+3. **Email**: Entre em contato diretamente
 
 ---
 
