@@ -246,15 +246,16 @@ class MonitorColetasApp(QMainWindow):
     def criar_tabela(self, layout):
         """Cria a tabela de dados."""
         self.tabela = QTableWidget()
-        self.tabela.setColumnCount(4)
-        self.tabela.setHorizontalHeaderLabels(['Data', 'Valor (USD)', 'Taxa (%)', 'Acumulado (USD)'])
+        self.tabela.setColumnCount(5)  # Adicionada coluna Dias
+        self.tabela.setHorizontalHeaderLabels(['Data', 'Dias', 'Valor (USD)', 'Taxa (%)', 'Acumulado (USD)'])
         
         # Configurar largura das colunas
         header = self.tabela.horizontalHeader()
         header.setStretchLastSection(True)
-        self.tabela.setColumnWidth(0, 120)
-        self.tabela.setColumnWidth(1, 150)
-        self.tabela.setColumnWidth(2, 120)
+        self.tabela.setColumnWidth(0, 100)  # Data
+        self.tabela.setColumnWidth(1, 70)   # Dias
+        self.tabela.setColumnWidth(2, 130)  # Valor USD
+        self.tabela.setColumnWidth(3, 100)  # Taxa %
         
         # Estilo da tabela
         self.tabela.setAlternatingRowColors(True)
@@ -354,9 +355,10 @@ class MonitorColetasApp(QMainWindow):
             total_acumulado += coleta.coleta_usd
             
             self.tabela.setItem(i, 0, QTableWidgetItem(coleta.data))
-            self.tabela.setItem(i, 1, QTableWidgetItem(f"${coleta.coleta_usd:.2f}"))
-            self.tabela.setItem(i, 2, QTableWidgetItem(f"{coleta.taxa_percentual:.4f}%"))
-            self.tabela.setItem(i, 3, QTableWidgetItem(f"${total_acumulado:.2f}"))
+            self.tabela.setItem(i, 1, QTableWidgetItem(str(coleta.dias)))  # Nova coluna Dias
+            self.tabela.setItem(i, 2, QTableWidgetItem(f"${coleta.coleta_usd:.2f}"))
+            self.tabela.setItem(i, 3, QTableWidgetItem(f"{coleta.taxa_percentual:.4f}%"))
+            self.tabela.setItem(i, 4, QTableWidgetItem(f"${total_acumulado:.2f}"))  # Coluna movida
     
     def atualizar_totais(self):
         """Atualiza os labels de totais."""

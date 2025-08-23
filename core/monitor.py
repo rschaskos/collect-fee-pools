@@ -7,6 +7,7 @@ from utils.paths import get_data_file_path, get_legacy_file_path
 
 from models.coleta import Coleta
 from models.pool_config import PoolConfig
+from datetime import datetime
 
 class MonitorLiquidez:
     """Gerencia múltiplas pools e suas coletas."""
@@ -28,6 +29,32 @@ class MonitorLiquidez:
         if self.pools:
             self.pool_ativa_id = list(self.pools.keys())[0]
             self.carregar_dados_pool_ativa()
+
+    def _calcular_dias_entre_datas(self, data_inicial: str, data_final: str) -> int:
+        """Calcula dias entre duas datas no formato dd/MM/yyyy."""
+        try:
+            data_ini = datetime.strptime(data_inicial, "%d/%m/%Y")
+            data_fim = datetime.strptime(data_final, "%d/%m/%Y")
+            return (data_fim - data_ini).days
+        except ValueError as e:
+            print(f"Erro ao calcular dias entre {data_inicial} e {data_final}: {e}")
+            return 0
+
+    def _calcular_dias_coleta(self, pool_id: str, data_coleta: str) -> int:
+        """Calcula quantos dias desde a última coleta ou data base da pool."""
+        pool_config = self.pools.get(pool_id)
+        dados_pool = self.dados_pools.get(pool_id, [])
+        
+        if not pool_config:
+            return 0
+        
+        # Se é a primeira coleta, calcular desde a data de abertura da pool
+        if not dados_pool:
+            return self._calcular_dias_entre_datas(pool_config.data_abertura, data_coleta)
+        
+        # Se já existem coletas, calcular desde a última coleta
+        ultima_coleta = dados_pool[-1]
+        return self._calcular_dias_entre_datas(ultima_coleta.data, data_coleta)
 
     def _migrar_dados_antigos(self):
         """Migra dados do formato antigo (pool única) para o novo formato."""
@@ -199,9 +226,36 @@ class MonitorLiquidez:
                                 else:
                                     taxa = (coleta_usd / pool_config.valor_inicial) * 100
                             
-                            self.dados_pools[pool_id].append(Coleta(data, coleta_usd, taxa))
+                            # Calcular ou ler dias
+                            dias = 0
+                            if len(row) >= 5:  # Se já tem dados de dias no CSV
+                                try:
+                                    dias = int(float(row[4]))  # 5ª coluna seria dias
+                                except (ValueError, IndexError):
+                                    # Se não conseguir ler, recalcular
+                                    if pool_config:
+                                        # Se é a primeira coleta desta sessão de carregamento
+                                        if not self.dados_pools[pool_id]:
+                                            dias = self._calcular_dias_entre_datas(pool_config.data_abertura, data)
+                                        else:
+                                            ultima_coleta = self.dados_pools[pool_id][-1]
+                                            dias = self._calcular_dias_entre_datas(ultima_coleta.data, data)
+                            else:
+                                # Recalcular dias para dados antigos
+                                if pool_config:
+                                    if not self.dados_pools[pool_id]:
+                                        dias = self._calcular_dias_entre_datas(pool_config.data_abertura, data)
+                                    else:
+                                        ultima_coleta = self.dados_pools[pool_id][-1]
+                                        dias = self._calcular_dias_entre_datas(ultima_coleta.data, data)
+                            
+                            self.dados_pools[pool_id].append(Coleta(data, coleta_usd, taxa, dias))
                         except (ValueError, IndexError) as e:
                             print(f'Erro ao ler a linha {row}. Erro: {e}')
+                            
+            # Após carregar, salvar novamente para incluir dias calculados
+            self.salvar_dados_pool(pool_id)
+            
         except Exception as e:
             print(f"Erro ao carregar dados da pool {pool_id}: {e}")
 
@@ -213,7 +267,8 @@ class MonitorLiquidez:
         try:
             with open(arquivo_coletas, 'w', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
-                writer.writerow(['Data', 'Coleta_USD', 'Taxa_Percentual', 'Total_Acumulado_USD'])
+                # Header atualizado com coluna Dias
+                writer.writerow(['Data', 'Coleta_USD', 'Taxa_Percentual', 'Total_Acumulado_USD', 'Dias'])
                 
                 total_acumulado = 0
                 for coleta in dados:
@@ -222,7 +277,8 @@ class MonitorLiquidez:
                         coleta.data, 
                         coleta.coleta_usd, 
                         coleta.taxa_percentual, 
-                        total_acumulado
+                        total_acumulado,
+                        coleta.dias  # Nova coluna
                     ])
         except Exception as e:
             raise Exception(f"Erro ao salvar dados da pool {pool_id}: {e}")
@@ -236,8 +292,14 @@ class MonitorLiquidez:
         if not pool_config:
             return None
         
+        # Calcular taxa
         taxa = (valor / pool_config.valor_inicial) * 100
-        nova_coleta = Coleta(data, valor, taxa)
+        
+        # Calcular dias desde última coleta/data base
+        dias = self._calcular_dias_coleta(self.pool_ativa_id, data)
+        
+        # Criar nova coleta com dias calculados
+        nova_coleta = Coleta(data, valor, taxa, dias)
         
         if self.pool_ativa_id not in self.dados_pools:
             self.dados_pools[self.pool_ativa_id] = []
@@ -290,8 +352,8 @@ class MonitorLiquidez:
                 writer.writerow(['Valor Inicial', pool_config.valor_inicial])
                 writer.writerow([])
                 
-                # Header da tabela
-                writer.writerow(['Data', 'Valor (USD)', 'Taxa (%)', 'Acumulado (USD)'])
+                # Header da tabela - incluindo Dias
+                writer.writerow(['Data', 'Dias', 'Valor (USD)', 'Taxa (%)', 'Acumulado (USD)'])
                 
                 # Dados
                 total_acumulado = 0
@@ -299,6 +361,7 @@ class MonitorLiquidez:
                     total_acumulado += coleta.coleta_usd
                     writer.writerow([
                         coleta.data,
+                        coleta.dias,  # Nova coluna
                         f"{coleta.coleta_usd:.2f}",
                         f"{coleta.taxa_percentual:.4f}",
                         f"{total_acumulado:.2f}"

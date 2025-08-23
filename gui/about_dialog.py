@@ -192,7 +192,7 @@ class AboutDialog(QDialog):
         layout.addWidget(titulo)
         
         dev_items = [
-            ("📝 Criado por:", "Desenvolvedor Python"),  # Altere aqui seu nome
+            ("📝 Criado por:", "Rschaskos"),  # Altere aqui seu nome
             ("🎯 Objetivo:", "Facilitar o monitoramento de pools DeFi"),
             ("📅 Desenvolvido em:", "Agosto 2025")
         ]
