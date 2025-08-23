@@ -4,8 +4,6 @@
 import sys
 import os
 
-from time import sleep
-
 def main():
     """Função principal otimizada"""
     
@@ -54,7 +52,6 @@ def main():
         
         # Processar eventos para mostrar splash
         app.processEvents()
-        sleep(2)
         
         # Importar app principal (demora mais)
         splash.showMessage(
@@ -63,7 +60,6 @@ def main():
             QColor(255, 255, 255)
         )
         app.processEvents()
-        sleep(2)
         
         # Importar a classe correta
         from gui.main_window import MonitorColetasApp

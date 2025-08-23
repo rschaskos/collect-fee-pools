@@ -1,12 +1,14 @@
 import sys
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                                QPushButton, QTableWidget, QTableWidgetItem, QLabel,
-                               QMessageBox, QFileDialog, QComboBox, QFrame, QDialog)
+                               QMessageBox, QFileDialog, QComboBox, QFrame, QDialog,
+                               QMenuBar, QMenu)
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QIcon, QPalette
+from PySide6.QtGui import QFont, QIcon, QPalette, QAction
 
 from core.monitor import MonitorLiquidez
 from gui.dialogs import PoolConfigDialog, NovaColetaDialog, SelecionarPoolDialog
+from gui.about_dialog import AboutDialog
 
 class MonitorColetasApp(QMainWindow):
     """Janela principal da aplicação."""
@@ -15,7 +17,106 @@ class MonitorColetasApp(QMainWindow):
         super().__init__()
         self.monitor = MonitorLiquidez()
         self.setup_ui()
+        self.criar_menu()
         self.atualizar_interface()
+    
+    def criar_menu(self):
+        """Cria a barra de menu."""
+        menubar = self.menuBar()
+        
+        # Menu Arquivo
+        menu_arquivo = menubar.addMenu("Arquivo")
+        
+        # Ação Nova Pool
+        acao_nova_pool = QAction("Nova Pool", self)
+        acao_nova_pool.setShortcut("Ctrl+N")
+        acao_nova_pool.setStatusTip("Criar uma nova pool de liquidez")
+        acao_nova_pool.triggered.connect(self.nova_pool)
+        menu_arquivo.addAction(acao_nova_pool)
+        
+        # Ação Nova Coleta
+        acao_nova_coleta = QAction("Nova Coleta", self)
+        acao_nova_coleta.setShortcut("Ctrl+R")
+        acao_nova_coleta.setStatusTip("Registrar nova coleta na pool ativa")
+        acao_nova_coleta.triggered.connect(self.nova_coleta)
+        menu_arquivo.addAction(acao_nova_coleta)
+        
+        menu_arquivo.addSeparator()
+        
+        # Ação Exportar
+        acao_exportar = QAction("Exportar CSV", self)
+        acao_exportar.setShortcut("Ctrl+E")
+        acao_exportar.setStatusTip("Exportar dados da pool ativa")
+        acao_exportar.triggered.connect(self.exportar_dados)
+        menu_arquivo.addAction(acao_exportar)
+        
+        menu_arquivo.addSeparator()
+        
+        # Ação Sair
+        acao_sair = QAction("Sair", self)
+        acao_sair.setShortcut("Ctrl+Q")
+        acao_sair.setStatusTip("Sair da aplicação")
+        acao_sair.triggered.connect(self.close)
+        menu_arquivo.addAction(acao_sair)
+        
+        # Menu Pools
+        menu_pools = menubar.addMenu("Pools")
+        
+        # Ação Editar Pool
+        acao_editar_pool = QAction("Editar Pool Ativa", self)
+        acao_editar_pool.setShortcut("Ctrl+Alt+E")
+        acao_editar_pool.triggered.connect(self.editar_pool)
+        menu_pools.addAction(acao_editar_pool)
+        
+        # Ação Excluir Pool
+        acao_excluir_pool = QAction("Excluir Pool", self)
+        acao_excluir_pool.setShortcut("Ctrl+Alt+D")
+        acao_excluir_pool.triggered.connect(self.excluir_pool)
+        menu_pools.addAction(acao_excluir_pool)
+        
+        menu_pools.addSeparator()
+        
+        # Ação Limpar Dados
+        acao_limpar = QAction("Limpar Dados da Pool", self)
+        acao_limpar.triggered.connect(self.limpar_dados)
+        menu_pools.addAction(acao_limpar)
+        
+        # Menu Ajuda
+        menu_ajuda = menubar.addMenu("Ajuda")
+        
+        # Ação Sobre
+        acao_sobre = QAction("Sobre", self)
+        acao_sobre.setShortcut("F1")
+        acao_sobre.setStatusTip("Informações sobre a aplicação")
+        acao_sobre.triggered.connect(self.mostrar_sobre)
+        menu_ajuda.addAction(acao_sobre)
+        
+        # Ação Atalhos
+        acao_atalhos = QAction("Atalhos do Teclado", self)
+        acao_atalhos.triggered.connect(self.mostrar_atalhos)
+        menu_ajuda.addAction(acao_atalhos)
+    
+    def mostrar_sobre(self):
+        """Mostra o diálogo sobre a aplicação."""
+        dialog = AboutDialog(self)
+        dialog.exec()
+    
+    def mostrar_atalhos(self):
+        """Mostra os atalhos de teclado disponíveis."""
+        atalhos_text = """
+        <h3>⌨️ Atalhos de Teclado</h3>
+        <table style="border-collapse: collapse; width: 100%;">
+        <tr><td style="padding: 5px; font-weight: bold;">Ctrl+N</td><td style="padding: 5px;">Nova Pool</td></tr>
+        <tr><td style="padding: 5px; font-weight: bold;">Ctrl+R</td><td style="padding: 5px;">Nova Coleta</td></tr>
+        <tr><td style="padding: 5px; font-weight: bold;">Ctrl+E</td><td style="padding: 5px;">Exportar CSV</td></tr>
+        <tr><td style="padding: 5px; font-weight: bold;">Ctrl+Alt+E</td><td style="padding: 5px;">Editar Pool Ativa</td></tr>
+        <tr><td style="padding: 5px; font-weight: bold;">Ctrl+Alt+D</td><td style="padding: 5px;">Excluir Pool</td></tr>
+        <tr><td style="padding: 5px; font-weight: bold;">F1</td><td style="padding: 5px;">Sobre</td></tr>
+        <tr><td style="padding: 5px; font-weight: bold;">Ctrl+Q</td><td style="padding: 5px;">Sair</td></tr>
+        </table>
+        """
+        
+        QMessageBox.about(self, "Atalhos de Teclado", atalhos_text)
     
     def setup_ui(self):
         """Configura a interface principal."""
