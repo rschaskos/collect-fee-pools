@@ -38,7 +38,7 @@ PySide6
 
 ### Instalação das Dependências
 ```bash
-pip install PySide6
+pip install PySide6 pyinstaller pillow setproctitle pyobjc-framework-Cocoa
 ```
 
 ### Executar a Aplicação
@@ -53,62 +53,7 @@ python main.py
 pip install pyinstaller
 
 # Gerar aplicação
-pyinstaller --clean --onefile --windowed main.py \
-    --add-data "gui:gui" \
-    --add-data "utils:utils" \
-    --icon=icon/favicon.icns \
-    --name "collect-fee"
-```
-
-## Estrutura do Projeto
-
-```
-monitor-coletas/
-├── main.py                    # Ponto de entrada da aplicação
-├── core/
-│   ├── __init__.py
-│   └── monitor.py            # Lógica principal (multi-pool)
-├── models/
-│   ├── __init__.py
-│   ├── coleta.py            # Modelo de dados para coletas
-│   └── pool_config.py       # Modelo de configuração de pools
-├── gui/
-│   ├── __init__.py
-│   ├── main_window.py       # Interface principal com dropdown
-│   └── dialogs.py           # Diálogos para pools e coletas
-├── utils/
-│   ├── __init__.py
-│   └── paths.py             # Utilitários para caminhos de arquivos
-├── icon/
-│   └── favicon.icns         # Ícone da aplicação
-└── README.md
-```
-
-## 💾 Estrutura de Dados
-
-### Arquivos Gerados
-```
-~/Library/Application Support/Monitor de Coletas/
-├── pools_config.csv              # Configurações de todas as pools
-├── pool_[UUID]_coletas.csv       # Coletas da pool 1
-├── pool_[UUID]_coletas.csv       # Coletas da pool 2
-└── pool_[UUID]_coletas.csv       # Coletas da pool N
-```
-
-### Formato dos Dados
-
-**pools_config.csv:**
-```csv
-pool_id,nome,data_abertura,valor_inicial,tipo_moeda
-uuid-1,Pool Principal,15/01/2024,1000.00,USDC/ETH
-uuid-2,Pool Secundária,20/01/2024,2000.00,DAI/USDC
-```
-
-**pool_[UUID]_coletas.csv:**
-```csv
-Data,Coleta_USD,Taxa_Percentual,Total_Acumulado_USD
-15/01/2024,125.50,12.5500,125.50
-20/01/2024,89.30,8.9300,214.80
+python build_final.py
 ```
 
 ## Como Usar

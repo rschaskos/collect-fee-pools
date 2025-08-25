@@ -1,2 +1,5 @@
 PySide6>=6.0.0
+pyinstaller
 pillow
+setproctitle
+pyobjc-framework-Cocoa
