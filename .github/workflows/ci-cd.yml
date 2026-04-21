@@ -158,7 +158,7 @@ jobs:
 
           # Windows
           cd collect-fee-pools-windows
-          powershell -Command "Compress-Archive -Path 'collect-fee' -DestinationPath '../Collect-Fee-Pools-Windows.zip'"
+          zip -r "../Collect-Fee-Pools-Windows.zip" "collect-fee"
           cd ..
 
           # Linux
