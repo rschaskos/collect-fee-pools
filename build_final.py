@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build final definitivo - baseado no que funcionou no debug
+Build final multiplataforma - macOS, Windows, Linux
 """
 
 import os
@@ -18,8 +18,8 @@ def executar_comando(comando):
         print(f"Erro: {e.stderr}")
         return False
 
-def gerar_spec_final():
-    """Gera .spec final com as configurações que funcionaram"""
+def gerar_spec_macos():
+    """Gera .spec para macOS"""
     spec_content = '''# -*- mode: python ; coding: utf-8 -*-
 
 import sys
@@ -42,7 +42,7 @@ for icon_dir in ['icon', 'assets']:
 
 hiddenimports = [
     'PySide6.QtCore',
-    'PySide6.QtWidgets', 
+    'PySide6.QtWidgets',
     'PySide6.QtGui',
     'models.coleta',
     'models.pool_config',
@@ -82,7 +82,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
-    console=True,  # CRÍTICO: Manter console=True
+    console=True,
     disable_windowed_traceback=False,
 )
 
@@ -114,83 +114,278 @@ app = BUNDLE(
     }
 )
 '''
-    
+
     with open('collect-fee.spec', 'w') as f:
         f.write(spec_content)
 
-def main():
-    """Build final"""
-    print("🚀 BUILD DEFINITIVO - COLLECT FEE POOLS")
-    
-    if sys.platform != "darwin":
-        print("❌ Específico para macOS")
-        return 1
-    
-    # Verificar arquivo principal
-    if not os.path.exists('main.py'):
-        print("❌ main.py não encontrado!")
-        return 1
-    
-    # Verificar se existe .icns, senão converter de .ico
+def gerar_spec_windows():
+    """Gera .spec para Windows"""
+    spec_content = '''# -*- mode: python ; coding: utf-8 -*-
+
+import sys
+from pathlib import Path
+
+project_root = Path.cwd()
+
+datas = [
+    (str(project_root / 'gui'), 'gui'),
+    (str(project_root / 'core'), 'core'),
+    (str(project_root / 'models'), 'models'),
+    (str(project_root / 'utils'), 'utils'),
+]
+
+# Incluir ícones
+for icon_dir in ['icon', 'assets']:
+    icon_path = project_root / icon_dir
+    if icon_path.exists():
+        datas.append((str(icon_path), icon_dir))
+
+hiddenimports = [
+    'PySide6.QtCore',
+    'PySide6.QtWidgets',
+    'PySide6.QtGui',
+    'models.coleta',
+    'models.pool_config',
+    'core.monitor',
+    'gui.main_window',
+    'gui.dialogs',
+    'gui.about_dialog',
+    'utils.paths',
+    'utils.styles',
+]
+
+a = Analysis(
+    ['main.py'],
+    pathex=[str(project_root)],
+    binaries=[],
+    datas=datas,
+    hiddenimports=hiddenimports,
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=None,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=None)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    [],
+    exclude_binaries=True,
+    name='collect-fee.exe',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,
+    console=True,
+    icon='icon/favicon.ico' if (project_root / 'icon' / 'favicon.ico').exists() else None,
+    disable_windowed_traceback=False,
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=False,
+    upx_exclude=[],
+    name='collect-fee',
+)
+'''
+
+    with open('collect-fee.spec', 'w') as f:
+        f.write(spec_content)
+
+def gerar_spec_linux():
+    """Gera .spec para Linux"""
+    spec_content = '''# -*- mode: python ; coding: utf-8 -*-
+
+import sys
+from pathlib import Path
+
+project_root = Path.cwd()
+
+datas = [
+    (str(project_root / 'gui'), 'gui'),
+    (str(project_root / 'core'), 'core'),
+    (str(project_root / 'models'), 'models'),
+    (str(project_root / 'utils'), 'utils'),
+]
+
+# Incluir ícones
+for icon_dir in ['icon', 'assets']:
+    icon_path = project_root / icon_dir
+    if icon_path.exists():
+        datas.append((str(icon_path), icon_dir))
+
+hiddenimports = [
+    'PySide6.QtCore',
+    'PySide6.QtWidgets',
+    'PySide6.QtGui',
+    'models.coleta',
+    'models.pool_config',
+    'core.monitor',
+    'gui.main_window',
+    'gui.dialogs',
+    'gui.about_dialog',
+    'utils.paths',
+    'utils.styles',
+]
+
+a = Analysis(
+    ['main.py'],
+    pathex=[str(project_root)],
+    binaries=[],
+    datas=datas,
+    hiddenimports=hiddenimports,
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=None,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=None)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    [],
+    exclude_binaries=True,
+    name='collect-fee',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,
+    console=True,
+    disable_windowed_traceback=False,
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=False,
+    upx_exclude=[],
+    name='collect-fee',
+)
+'''
+
+    with open('collect-fee.spec', 'w') as f:
+        f.write(spec_content)
+
+def detectar_plataforma():
+    """Detecta a plataforma atual"""
+    if sys.platform == "darwin":
+        return "macos"
+    elif sys.platform == "win32":
+        return "windows"
+    elif sys.platform == "linux":
+        return "linux"
+    else:
+        return "unknown"
+
+def preparar_icone_macos():
+    """Prepara ícone .icns para macOS"""
     icns_path = Path('icon/favicon.icns')
     ico_path = Path('icon/favicon.ico')
-    
+
     if not icns_path.exists() and ico_path.exists():
         print("🔄 Convertendo .ico para .icns...")
         try:
-            # Usar sips (nativo do macOS) para converter
             resultado = subprocess.run([
-                'sips', '-s', 'format', 'icns', 
+                'sips', '-s', 'format', 'icns',
                 str(ico_path), '--out', str(icns_path)
             ], capture_output=True, text=True)
-            
+
             if resultado.returncode == 0:
                 print(f"✅ Ícone convertido: {icns_path}")
             else:
                 print(f"⚠️ Falha na conversão: {resultado.stderr}")
-                print("   Continuando sem ícone personalizado...")
         except Exception as e:
             print(f"⚠️ Erro ao converter ícone: {e}")
     elif icns_path.exists():
         print(f"✅ Ícone .icns encontrado: {icns_path}")
     else:
-        print("⚠️ Nenhum arquivo de ícone encontrado")
-    
+        print("⚠️ Nenhum arquivo .icns encontrado")
+
+def main():
+    """Build final multiplataforma"""
+    plataforma = detectar_plataforma()
+
+    print(f"🚀 BUILD - COLLECT FEE POOLS ({plataforma.upper()})")
+
+    if plataforma == "unknown":
+        print("❌ Plataforma não suportada")
+        return 1
+
+    # Verificar arquivo principal
+    if not os.path.exists('main.py'):
+        print("❌ main.py não encontrado!")
+        return 1
+
+    # Preparativos específicos da plataforma
+    if plataforma == "macos":
+        preparar_icone_macos()
+
     # Limpar
-    print("🧹 Limpando...")
+    print("🧹 Limpando builds antigos...")
     for item in ['build', 'dist', '*.spec']:
         for path in Path('.').glob(item):
             if path.is_dir():
                 shutil.rmtree(path)
             else:
                 path.unlink()
-    
-    # Gerar .spec
+
+    # Gerar .spec apropriado
     print("📝 Gerando .spec...")
-    gerar_spec_final()
-    
+    if plataforma == "macos":
+        gerar_spec_macos()
+    elif plataforma == "windows":
+        gerar_spec_windows()
+    elif plataforma == "linux":
+        gerar_spec_linux()
+
     # Build
     print("🔨 Executando build...")
     if not executar_comando(['pyinstaller', '--clean', '--noconfirm', 'collect-fee.spec']):
         print("❌ Falha no build")
         return 1
-    
+
     # Verificar resultado
-    app_path = Path('dist/Collect Fee Pools.app')
-    if app_path.exists():
-        # Verificar se o ícone foi incluído
-        icon_resources = app_path / 'Contents' / 'Resources'
-        if (icon_resources / 'icon-windowed.icns').exists():
-            print("✅ Ícone incluído no bundle")
-        
-        print("✅ Build concluído com sucesso!")
-        print(f"📱 Aplicação: {app_path}")
-        print("\n🎯 TESTE:")
-        print("   open 'dist/Collect Fee Pools.app'")
-        return 0
-    else:
-        print("❌ Aplicação não foi criada")
-        return 1
+    print("✅ Build concluído com sucesso!")
+
+    if plataforma == "macos":
+        app_path = Path('dist/Collect Fee Pools.app')
+        if app_path.exists():
+            print(f"📱 Aplicação: {app_path}")
+            print("\n🎯 TESTE:")
+            print("   open 'dist/Collect Fee Pools.app'")
+            return 0
+    elif plataforma == "windows":
+        exe_path = Path('dist/collect-fee/collect-fee.exe')
+        if exe_path.exists():
+            print(f"💻 Executável: {exe_path}")
+            return 0
+    elif plataforma == "linux":
+        exe_path = Path('dist/collect-fee/collect-fee')
+        if exe_path.exists():
+            print(f"🐧 Executável: {exe_path}")
+            return 0
+
+    print("❌ Aplicação não foi criada")
+    return 1
 
 if __name__ == "__main__":
     sys.exit(main())
