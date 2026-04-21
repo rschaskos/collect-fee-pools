@@ -3,12 +3,13 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                                QPushButton, QTableWidget, QTableWidgetItem, QLabel,
                                QMessageBox, QFileDialog, QComboBox, QFrame, QDialog,
                                QMenuBar, QMenu, QGridLayout, QSizePolicy)
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, QSize
 from PySide6.QtGui import QFont, QIcon, QPalette, QAction
 
 from core.monitor import MonitorLiquidez
 from gui.dialogs import PoolConfigDialog, NovaColetaDialog, SelecionarPoolDialog, EditarColetaDialog
 from gui.about_dialog import AboutDialog
+from utils.icons import get_icon
 
 # Importar estilos (precisa criar o arquivo utils/styles.py)
 try:
@@ -126,7 +127,7 @@ class MonitorColetasApp(QMainWindow):
     def mostrar_atalhos(self):
         """Mostra os atalhos de teclado disponíveis."""
         atalhos_text = """
-        <h3>⌨️ Atalhos de Teclado</h3>
+        <h3>Atalhos de Teclado</h3>
         <table style="border-collapse: collapse; width: 100%;">
         <tr><td style="padding: 5px; font-weight: bold;">Ctrl+N</td><td style="padding: 5px;">Nova Pool</td></tr>
         <tr><td style="padding: 5px; font-weight: bold;">Ctrl+R</td><td style="padding: 5px;">Nova Coleta</td></tr>
@@ -212,7 +213,7 @@ class MonitorColetasApp(QMainWindow):
         header_layout.setAlignment(Qt.AlignCenter)
         
         # Título principal MENOR
-        titulo_label = QLabel("🏊‍♂️ Monitor de Coletas")
+        titulo_label = QLabel("Monitor de Coletas")
         titulo_font = QFont()
         titulo_font.setPointSize(20)  # ← REDUZIDO de 24 para 20
         titulo_font.setBold(True)
@@ -248,7 +249,7 @@ class MonitorColetasApp(QMainWindow):
         pools_layout.setSpacing(12)  # ← REDUZIDO de 16 para 12
         
         # Título da seção MENOR
-        titulo_label = QLabel("🏊 Gerenciamento de Pools")
+        titulo_label = QLabel("Gerenciamento de Pools")
         titulo_font = QFont()
         titulo_font.setPointSize(14)  # ← REDUZIDO de 16 para 14
         titulo_font.setBold(True)
@@ -286,7 +287,9 @@ class MonitorColetasApp(QMainWindow):
         controles_layout.addStretch()
         
         # Botões MENORES
-        self.btn_nova_pool = QPushButton("➕ Nova Pool")
+        self.btn_nova_pool = QPushButton("Nova Pool")
+        self.btn_nova_pool.setIcon(get_icon("plus"))
+        self.btn_nova_pool.setIconSize(QSize(18, 18))
         self.btn_nova_pool.clicked.connect(self.nova_pool)
         self.btn_nova_pool.setStyleSheet("""
             QPushButton {
@@ -304,7 +307,9 @@ class MonitorColetasApp(QMainWindow):
         """)
         controles_layout.addWidget(self.btn_nova_pool)
         
-        self.btn_editar_pool = QPushButton("✏️ Editar")
+        self.btn_editar_pool = QPushButton("Editar")
+        self.btn_editar_pool.setIcon(get_icon("edit"))
+        self.btn_editar_pool.setIconSize(QSize(18, 18))
         self.btn_editar_pool.clicked.connect(self.editar_pool)
         self.btn_editar_pool.setStyleSheet("""
             QPushButton {
@@ -322,7 +327,9 @@ class MonitorColetasApp(QMainWindow):
         """)
         controles_layout.addWidget(self.btn_editar_pool)
         
-        self.btn_excluir_pool = QPushButton("🗑️ Excluir")
+        self.btn_excluir_pool = QPushButton("Excluir")
+        self.btn_excluir_pool.setIcon(get_icon("trash"))
+        self.btn_excluir_pool.setIconSize(QSize(18, 18))
         self.btn_excluir_pool.clicked.connect(self.excluir_pool)
         self.btn_excluir_pool.setStyleSheet("""
             QPushButton {
@@ -359,7 +366,7 @@ class MonitorColetasApp(QMainWindow):
         coletas_layout.setSpacing(12)  # ← REDUZIDO
         
         # Título da seção MENOR
-        titulo_label = QLabel("💰 Coletas da Pool Ativa")
+        titulo_label = QLabel("Coletas da Pool Ativa")
         titulo_font = QFont()
         titulo_font.setPointSize(14)  # ← REDUZIDO de 16 para 14
         titulo_font.setBold(True)
@@ -371,7 +378,9 @@ class MonitorColetasApp(QMainWindow):
         acoes_layout = QHBoxLayout()
         acoes_layout.setSpacing(10)
         
-        self.btn_nova_coleta = QPushButton("➕ Nova Coleta")
+        self.btn_nova_coleta = QPushButton("Nova Coleta")
+        self.btn_nova_coleta.setIcon(get_icon("plus"))
+        self.btn_nova_coleta.setIconSize(QSize(18, 18))
         self.btn_nova_coleta.clicked.connect(self.nova_coleta)
         self.btn_nova_coleta.setStyleSheet("""
             QPushButton {
@@ -391,7 +400,9 @@ class MonitorColetasApp(QMainWindow):
         
         acoes_layout.addStretch()
         
-        self.btn_exportar = QPushButton("📊 Exportar CSV")
+        self.btn_exportar = QPushButton("Exportar CSV")
+        self.btn_exportar.setIcon(get_icon("chart"))
+        self.btn_exportar.setIconSize(QSize(18, 18))
         self.btn_exportar.clicked.connect(self.exportar_dados)
         self.btn_exportar.setStyleSheet("""
             QPushButton {
@@ -409,7 +420,9 @@ class MonitorColetasApp(QMainWindow):
         """)
         acoes_layout.addWidget(self.btn_exportar)
         
-        self.btn_limpar = QPushButton("🗑️ Limpar Dados")
+        self.btn_limpar = QPushButton("Limpar Dados")
+        self.btn_limpar.setIcon(get_icon("trash"))
+        self.btn_limpar.setIconSize(QSize(18, 18))
         self.btn_limpar.clicked.connect(self.limpar_dados)
         self.btn_limpar.setStyleSheet("""
             QPushButton {
@@ -461,10 +474,10 @@ class MonitorColetasApp(QMainWindow):
         layout1.setSpacing(8)
         
         # Header fixo
-        header1 = QLabel("📊 Total de Coletas")
+        header1 = QLabel("Total de Coletas")
         header1.setStyleSheet("""
-            font-size: 14px; 
-            font-weight: bold; 
+            font-size: 14px;
+            font-weight: bold;
             color: #3B82F6;
             background-color: transparent;
             border: none;
@@ -526,10 +539,10 @@ class MonitorColetasApp(QMainWindow):
         layout2.setContentsMargins(16, 16, 16, 16)
         layout2.setSpacing(8)
         
-        header2 = QLabel("💰 Total Acumulado")
+        header2 = QLabel("Total Acumulado")
         header2.setStyleSheet("""
-            font-size: 14px; 
-            font-weight: bold; 
+            font-size: 14px;
+            font-weight: bold;
             color: #10B981;
             background-color: transparent;
             border: none;
@@ -587,10 +600,10 @@ class MonitorColetasApp(QMainWindow):
         layout3.setContentsMargins(16, 16, 16, 16)
         layout3.setSpacing(8)
         
-        header3 = QLabel("📈 Taxa Acumulada")
+        header3 = QLabel("Taxa Acumulada")
         header3.setStyleSheet("""
-            font-size: 14px; 
-            font-weight: bold; 
+            font-size: 14px;
+            font-weight: bold;
             color: #F59E0B;
             background-color: transparent;
             border: none;
@@ -648,10 +661,10 @@ class MonitorColetasApp(QMainWindow):
         layout4.setContentsMargins(16, 16, 16, 16)
         layout4.setSpacing(8)
         
-        header4 = QLabel("⚡ Média por Coleta")
+        header4 = QLabel("Média por Coleta")
         header4.setStyleSheet("""
-            font-size: 14px; 
-            font-weight: bold; 
+            font-size: 14px;
+            font-weight: bold;
             color: #EF4444;
             background-color: transparent;
             border: none;
@@ -709,7 +722,7 @@ class MonitorColetasApp(QMainWindow):
         layout5.setContentsMargins(16, 16, 16, 16)
         layout5.setSpacing(8)
 
-        header5 = QLabel("💎 Total Geral")
+        header5 = QLabel("Total Geral")
         header5.setStyleSheet("""
             font-size: 14px;
             font-weight: bold;
@@ -791,7 +804,7 @@ class MonitorColetasApp(QMainWindow):
         
         # Título da seção
         titulo_layout = QHBoxLayout()
-        titulo_label = QLabel("🏊 Gerenciamento de Pools")
+        titulo_label = QLabel("Gerenciamento de Pools")
         titulo_font = QFont()
         titulo_font.setPointSize(16)
         titulo_font.setBold(True)
@@ -819,17 +832,23 @@ class MonitorColetasApp(QMainWindow):
         controles_layout.addStretch()
         
         # Botões modernos
-        self.btn_nova_pool = QPushButton("➕ Nova Pool")
+        self.btn_nova_pool = QPushButton("Nova Pool")
+        self.btn_nova_pool.setIcon(get_icon("plus"))
+        self.btn_nova_pool.setIconSize(QSize(18, 18))
         self.btn_nova_pool.clicked.connect(self.nova_pool)
         self.btn_nova_pool.setStyleSheet(ModernStyles.get_button_style('success', 'medium'))
         controles_layout.addWidget(self.btn_nova_pool)
-        
-        self.btn_editar_pool = QPushButton("✏️ Editar")
+
+        self.btn_editar_pool = QPushButton("Editar")
+        self.btn_editar_pool.setIcon(get_icon("edit"))
+        self.btn_editar_pool.setIconSize(QSize(18, 18))
         self.btn_editar_pool.clicked.connect(self.editar_pool)
         self.btn_editar_pool.setStyleSheet(ModernStyles.get_button_style('primary', 'medium'))
         controles_layout.addWidget(self.btn_editar_pool)
-        
-        self.btn_excluir_pool = QPushButton("🗑️ Excluir")
+
+        self.btn_excluir_pool = QPushButton("Excluir")
+        self.btn_excluir_pool.setIcon(get_icon("trash"))
+        self.btn_excluir_pool.setIconSize(QSize(18, 18))
         self.btn_excluir_pool.clicked.connect(self.excluir_pool)
         self.btn_excluir_pool.setStyleSheet(ModernStyles.get_button_style('danger', 'medium'))
         controles_layout.addWidget(self.btn_excluir_pool)
@@ -847,7 +866,7 @@ class MonitorColetasApp(QMainWindow):
         
         # Título da seção
         titulo_layout = QHBoxLayout()
-        titulo_label = QLabel("💰 Coletas da Pool Ativa")
+        titulo_label = QLabel("Coletas da Pool Ativa")
         titulo_font = QFont()
         titulo_font.setPointSize(16)
         titulo_font.setBold(True)
@@ -861,19 +880,25 @@ class MonitorColetasApp(QMainWindow):
         acoes_layout = QHBoxLayout()
         acoes_layout.setSpacing(12)
         
-        self.btn_nova_coleta = QPushButton("➕ Nova Coleta")
+        self.btn_nova_coleta = QPushButton("Nova Coleta")
+        self.btn_nova_coleta.setIcon(get_icon("plus"))
+        self.btn_nova_coleta.setIconSize(QSize(18, 18))
         self.btn_nova_coleta.clicked.connect(self.nova_coleta)
         self.btn_nova_coleta.setStyleSheet(ModernStyles.get_button_style('success', 'large'))
         acoes_layout.addWidget(self.btn_nova_coleta)
-        
+
         acoes_layout.addStretch()
-        
-        self.btn_exportar = QPushButton("📊 Exportar CSV")
+
+        self.btn_exportar = QPushButton("Exportar CSV")
+        self.btn_exportar.setIcon(get_icon("chart"))
+        self.btn_exportar.setIconSize(QSize(18, 18))
         self.btn_exportar.clicked.connect(self.exportar_dados)
         self.btn_exportar.setStyleSheet(ModernStyles.get_button_style('secondary', 'medium'))
         acoes_layout.addWidget(self.btn_exportar)
-        
-        self.btn_limpar = QPushButton("🗑️ Limpar Dados")
+
+        self.btn_limpar = QPushButton("Limpar Dados")
+        self.btn_limpar.setIcon(get_icon("trash"))
+        self.btn_limpar.setIconSize(QSize(18, 18))
         self.btn_limpar.clicked.connect(self.limpar_dados)
         self.btn_limpar.setStyleSheet(ModernStyles.get_button_style('warning', 'medium'))
         acoes_layout.addWidget(self.btn_limpar)
@@ -925,23 +950,27 @@ class MonitorColetasApp(QMainWindow):
     def atualizar_combo_pools(self):
         """Atualiza o combo box com as pools disponíveis."""
         self.combo_pools.clear()
-        
+        self.combo_pools.blockSignals(True)
+
         pools = self.monitor.get_lista_pools()
         if not pools:
             self.combo_pools.addItem("Nenhuma pool configurada")
             self.combo_pools.setEnabled(False)
+            self.combo_pools.blockSignals(False)
             return
-        
+
         self.combo_pools.setEnabled(True)
         for pool in pools:
             self.combo_pools.addItem(pool.get_display_name(), pool.pool_id)
-        
+
         # Selecionar pool ativa
         if self.monitor.pool_ativa_id:
             for i in range(self.combo_pools.count()):
                 if self.combo_pools.itemData(i) == self.monitor.pool_ativa_id:
                     self.combo_pools.setCurrentIndex(i)
                     break
+
+        self.combo_pools.blockSignals(False)
     
     def pool_selecionada_mudou(self):
         """Chamado quando a pool selecionada muda."""
@@ -1166,15 +1195,17 @@ class MonitorColetasApp(QMainWindow):
         menu = QMenu(self)
         
         # Ação editar coleta
-        acao_editar = QAction("✏️ Editar Coleta", self)
+        acao_editar = QAction("Editar Coleta", self)
+        acao_editar.setIcon(get_icon("edit"))
         acao_editar.triggered.connect(lambda: self.editar_coleta(linha_selecionada))
         menu.addAction(acao_editar)
-        
+
         # Separador
         menu.addSeparator()
-        
+
         # Ação excluir coleta
-        acao_excluir = QAction("🗑️ Excluir Coleta", self)
+        acao_excluir = QAction("Excluir Coleta", self)
+        acao_excluir.setIcon(get_icon("trash"))
         acao_excluir.triggered.connect(lambda: self.excluir_coleta(linha_selecionada))
         menu.addAction(acao_excluir)
         
