@@ -1,0 +1,181 @@
+name: CI/CD - Build Multiplataforma
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+jobs:
+  # JOB 1: Testar código em macOS (representante de testes gerais)
+  test:
+    name: Testes - Validação
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Instalar UV
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Adicionar UV ao PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Instalar dependências
+        run: uv sync
+
+      - name: Validar aplicação
+        run: |
+          timeout 5 uv run python main.py &
+          sleep 3
+          echo "✅ Aplicação iniciou com sucesso"
+
+  # JOB 2: Build multiplataforma (macOS, Windows, Linux)
+  build:
+    name: Build - ${{ matrix.os }}
+    runs-on: ${{ matrix.runs-on }}
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    strategy:
+      matrix:
+        include:
+          - os: macOS
+            runs-on: macos-latest
+            artifact-name: collect-fee-pools-macos
+
+          - os: Windows
+            runs-on: windows-latest
+            artifact-name: collect-fee-pools-windows
+
+          - os: Linux
+            runs-on: ubuntu-latest
+            artifact-name: collect-fee-pools-linux
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Instalar UV (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Instalar UV (Windows)
+        if: runner.os == 'Windows'
+        run: powershell -ExecutionPolicy BypassUser -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+      - name: Adicionar UV ao PATH (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Adicionar UV ao PATH (Windows)
+        if: runner.os == 'Windows'
+        run: echo "$env:APPDATA\Python\Scripts" >> $env:GITHUB_PATH
+
+      - name: Instalar dependências com build tools
+        run: uv sync --all-extras
+
+      - name: Instalar bibliotecas Qt (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libqt6gui6 libqt6core6 libqt6widgets6
+
+      - name: Gerar executável
+        run: uv run python build_final.py
+
+      # Upload artefatos específicos por plataforma
+      - name: Upload artefato (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: dist/Collect Fee Pools.app
+          retention-days: 30
+
+      - name: Upload artefato (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: dist/collect-fee
+          retention-days: 30
+
+      - name: Upload artefato (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: dist/collect-fee
+          retention-days: 30
+
+  # JOB 3: Criar Release com todos os executáveis (apenas para tags)
+  release:
+    name: Release - Publicar Executáveis
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Instalar UV
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Adicionar UV ao PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Preparar pacotes para release
+        run: |
+          cd artifacts
+
+          # macOS
+          cd collect-fee-pools-macos
+          zip -r "../Collect-Fee-Pools-macOS.zip" "Collect Fee Pools.app"
+          cd ..
+
+          # Windows
+          cd collect-fee-pools-windows
+          powershell -Command "Compress-Archive -Path 'collect-fee' -DestinationPath '../Collect-Fee-Pools-Windows.zip'"
+          cd ..
+
+          # Linux
+          cd collect-fee-pools-linux
+          zip -r "../Collect-Fee-Pools-Linux.zip" "collect-fee"
+          cd ..
+
+          # Listar arquivos
+          ls -lh *.zip
+
+      - name: Upload para Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/*.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
