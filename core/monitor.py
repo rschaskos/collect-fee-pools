@@ -27,8 +27,10 @@ class MonitorLiquidez:
         
         # Definir pool ativa (primeira disponível)
         if self.pools:
-            self.pool_ativa_id = list(self.pools.keys())[0]
-            self.carregar_dados_pool_ativa()
+            self.pool_ativa_id = list(self.pools.keys())[-1]
+            # Carregar dados de TODAS as pools
+            for pool_id in self.pools.keys():
+                self.carregar_dados_pool(pool_id)
 
     def _calcular_dias_entre_datas(self, data_inicial: str, data_final: str) -> int:
         """Calcula dias entre duas datas no formato dd/MM/yyyy."""
@@ -147,7 +149,7 @@ class MonitorLiquidez:
             
             # Se era a pool ativa, selecionar outra
             if self.pool_ativa_id == pool_id:
-                self.pool_ativa_id = list(self.pools.keys())[0] if self.pools else None
+                self.pool_ativa_id = list(self.pools.keys())[-1] if self.pools else None
                 if self.pool_ativa_id:
                     self.carregar_dados_pool_ativa()
             
@@ -331,6 +333,21 @@ class MonitorLiquidez:
         """Calcula a taxa percentual acumulada da pool ativa."""
         dados = self.get_dados_pool_ativa()
         return sum(coleta.taxa_percentual for coleta in dados)
+    
+    def contar_total_coletas_todas_pools(self) -> int:
+        """Conta o total de coletas de todas as pools combinadas"""
+        total = 0
+        for pool_id in self.dados_pools:
+            total += len(self.dados_pools[pool_id])
+        return total
+    
+    def calcular_total_acumulado_todas_pools(self) -> float:
+        """Calcula o total acumulado (USD) de todas as pools combinadas"""
+        total = 0.0
+        for pool_id in self.dados_pools:
+            for coleta in self.dados_pools[pool_id]:
+                total += coleta.coleta_usd
+        return total
 
     def exportar_dados_pool_ativa(self, nome_arquivo: str) -> None:
         """Exporta dados da pool ativa para um arquivo CSV."""
