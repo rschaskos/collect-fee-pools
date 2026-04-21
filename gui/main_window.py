@@ -691,7 +691,68 @@ class MonitorColetasApp(QMainWindow):
         
         layout4.addStretch()
         stats_layout.addWidget(self.card_media_coleta)
-        
+
+        # === CARD 5: TOTAL GERAL (TODAS AS POOLS) ===
+        self.card_total_geral = QFrame()
+        self.card_total_geral.setFixedSize(220, 140)
+        self.card_total_geral.setStyleSheet("""
+            QFrame {
+                background-color: white;
+                border: 2px solid #8B5CF6;
+                border-radius: 12px;
+                padding: 0px;
+                margin: 4px;
+            }
+        """)
+
+        layout5 = QVBoxLayout(self.card_total_geral)
+        layout5.setContentsMargins(16, 16, 16, 16)
+        layout5.setSpacing(8)
+
+        header5 = QLabel("💎 Total Geral")
+        header5.setStyleSheet("""
+            font-size: 14px;
+            font-weight: bold;
+            color: #8B5CF6;
+            background-color: transparent;
+            border: none;
+            padding: 0px;
+            margin: 0px;
+        """)
+        header5.setAlignment(Qt.AlignLeft)
+        header5.setFixedHeight(20)
+        layout5.addWidget(header5)
+
+        self.card_total_geral.valor_label = QLabel("$0.00")
+        self.card_total_geral.valor_label.setStyleSheet("""
+            font-size: 28px;
+            font-weight: bold;
+            color: #1F2937;
+            background-color: transparent;
+            border: none;
+            padding: 0px;
+            margin: 0px;
+        """)
+        self.card_total_geral.valor_label.setAlignment(Qt.AlignLeft)
+        self.card_total_geral.valor_label.setFixedHeight(35)
+        layout5.addWidget(self.card_total_geral.valor_label)
+
+        self.card_total_geral.desc_label = QLabel("Todas as pools")
+        self.card_total_geral.desc_label.setStyleSheet("""
+            font-size: 12px;
+            color: #6B7280;
+            background-color: transparent;
+            border: none;
+            padding: 0px;
+            margin: 0px;
+        """)
+        self.card_total_geral.desc_label.setAlignment(Qt.AlignLeft)
+        self.card_total_geral.desc_label.setFixedHeight(15)
+        layout5.addWidget(self.card_total_geral.desc_label)
+
+        layout5.addStretch()
+        stats_layout.addWidget(self.card_total_geral)
+
         # Adicionar stretch no final para centralizar os cards
         stats_layout.addStretch()
         
@@ -714,6 +775,10 @@ class MonitorColetasApp(QMainWindow):
         if hasattr(self, 'card_media_coleta'):
             self.card_media_coleta.repaint()
             self.card_media_coleta.update()
+
+        if hasattr(self, 'card_total_geral'):
+            self.card_total_geral.repaint()
+            self.card_total_geral.update()
 
 
     def criar_secao_pools(self, layout):
@@ -931,6 +996,9 @@ class MonitorColetasApp(QMainWindow):
             # Calcular média por coleta
             media_coleta = total_acumulado / total_coletas if total_coletas > 0 else 0
 
+            # Calculate total geral from all pools combined
+            total_geral = self.monitor.calcular_total_acumulado_todas_pools()
+
             # Atualizar cards
             if hasattr(self, 'card_total_coletas') and hasattr(self.card_total_coletas, 'valor_label'):
                 self.card_total_coletas.valor_label.setText(str(total_coletas))
@@ -947,7 +1015,11 @@ class MonitorColetasApp(QMainWindow):
             if hasattr(self, 'card_media_coleta') and hasattr(self.card_media_coleta, 'valor_label'):
                 self.card_media_coleta.valor_label.setText(f"${media_coleta:.2f}")
                 self.card_media_coleta.valor_label.repaint()  # ← FORÇAR REPAINT
-            
+
+            if hasattr(self, 'card_total_geral') and hasattr(self.card_total_geral, 'valor_label'):
+                self.card_total_geral.valor_label.setText(f"${total_geral:.2f}")
+                self.card_total_geral.valor_label.repaint()
+
             # Forçar atualização visual geral
             self.forcar_atualizacao_visual()
             
