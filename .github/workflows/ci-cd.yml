@@ -75,7 +75,7 @@ jobs:
 
       - name: Instalar UV (Windows)
         if: runner.os == 'Windows'
-        run: powershell -ExecutionPolicy BypassUser -c "irm https://astral.sh/uv/install.ps1 | iex"
+        run: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
       - name: Adicionar UV ao PATH (macOS/Linux)
         if: runner.os != 'Windows'
