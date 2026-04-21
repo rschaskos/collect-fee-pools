@@ -1,0 +1,9 @@
+[project]
+name = "collect-fee-pools"
+version = "0.1.0"
+description = " Aplicativo desktop moderno em Python para monitorar coletas de taxas em pools de liquidez DeFi com interface gráfica intuitiva — construído com PySide6 e com suporte a executáveis nativos para macOS e Windows."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyside6>=6.11.0",
+]
