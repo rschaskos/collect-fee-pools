@@ -32,11 +32,9 @@ jobs:
       - name: Instalar dependências
         run: uv sync
 
-      - name: Validar aplicação
+      - name: Validar imports
         run: |
-          timeout 5 uv run python main.py &
-          sleep 3
-          echo "✅ Aplicação iniciou com sucesso"
+          uv run python -c "from gui.main_window import MonitorColetasApp; print('Imports OK')"
 
   # JOB 2: Build multiplataforma (macOS, Windows, Linux)
   build:
