@@ -29,27 +29,27 @@ Aplicativo desktop moderno em Python para monitorar coletas de taxas em pools de
 
 ```bash
 # Pré-requisitos
-Python 3.8+
-PySide6
+Python 3.13+
+UV (gestor de pacotes Python)
+
+# Instalar UV (se não tiver)
+curl https://astral.sh/uv/install.sh | sh
 
 # Instalação das dependências
-pip install PySide6 pyinstaller pillow setproctitle pyobjc-framework-Cocoa
+uv sync
 ```
 
 ## Executando a aplicação
 
 ```bash
-python main.py
+uv run main.py
 ```
 
 ## Gerar executável (macOS)
 
 ```bash
-# Instalar PyInstaller
-pip install pyinstaller
-
 # Gerar binário
-python build_final.py
+uv run build_final.py
 ```
 
 ## Como usar
