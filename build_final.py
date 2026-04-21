@@ -302,7 +302,7 @@ def preparar_icone_macos():
     ico_path = Path('icon/favicon.ico')
 
     if not icns_path.exists() and ico_path.exists():
-        print("🔄 Convertendo .ico para .icns...")
+        print("Convertendo .ico para .icns...")
         try:
             resultado = subprocess.run([
                 'sips', '-s', 'format', 'icns',
@@ -310,21 +310,21 @@ def preparar_icone_macos():
             ], capture_output=True, text=True)
 
             if resultado.returncode == 0:
-                print(f"✅ Ícone convertido: {icns_path}")
+                print(f"Icone convertido: {icns_path}")
             else:
-                print(f"⚠️ Falha na conversão: {resultado.stderr}")
+                print(f"Falha na conversao: {resultado.stderr}")
         except Exception as e:
-            print(f"⚠️ Erro ao converter ícone: {e}")
+            print(f"Erro ao converter icone: {e}")
     elif icns_path.exists():
-        print(f"✅ Ícone .icns encontrado: {icns_path}")
+        print(f"Icone .icns encontrado: {icns_path}")
     else:
-        print("⚠️ Nenhum arquivo .icns encontrado")
+        print("Nenhum arquivo .icns encontrado")
 
 def main():
     """Build final multiplataforma"""
     plataforma = detectar_plataforma()
 
-    print(f"🚀 BUILD - COLLECT FEE POOLS ({plataforma.upper()})")
+    print(f"BUILD - COLLECT FEE POOLS ({plataforma.upper()})")
 
     if plataforma == "unknown":
         print("❌ Plataforma não suportada")
@@ -340,7 +340,7 @@ def main():
         preparar_icone_macos()
 
     # Limpar
-    print("🧹 Limpando builds antigos...")
+    print("Limpando builds antigos...")
     for item in ['build', 'dist', '*.spec']:
         for path in Path('.').glob(item):
             if path.is_dir():
@@ -349,7 +349,7 @@ def main():
                 path.unlink()
 
     # Gerar .spec apropriado
-    print("📝 Gerando .spec...")
+    print("Gerando .spec...")
     if plataforma == "macos":
         gerar_spec_macos()
     elif plataforma == "windows":
@@ -358,33 +358,33 @@ def main():
         gerar_spec_linux()
 
     # Build
-    print("🔨 Executando build...")
+    print("Executando build...")
     if not executar_comando(['pyinstaller', '--clean', '--noconfirm', 'collect-fee.spec']):
         print("❌ Falha no build")
         return 1
 
     # Verificar resultado
-    print("✅ Build concluído com sucesso!")
+    print("Build concluido com sucesso!")
 
     if plataforma == "macos":
         app_path = Path('dist/Collect Fee Pools.app')
         if app_path.exists():
-            print(f"📱 Aplicação: {app_path}")
-            print("\n🎯 TESTE:")
+            print(f"Aplicacao: {app_path}")
+            print("\nTESTE:")
             print("   open 'dist/Collect Fee Pools.app'")
             return 0
     elif plataforma == "windows":
         exe_path = Path('dist/collect-fee/collect-fee.exe')
         if exe_path.exists():
-            print(f"💻 Executável: {exe_path}")
+            print(f"Executavel: {exe_path}")
             return 0
     elif plataforma == "linux":
         exe_path = Path('dist/collect-fee/collect-fee')
         if exe_path.exists():
-            print(f"🐧 Executável: {exe_path}")
+            print(f"Executavel: {exe_path}")
             return 0
 
-    print("❌ Aplicação não foi criada")
+    print("Aplicacao nao foi criada")
     return 1
 
 if __name__ == "__main__":
