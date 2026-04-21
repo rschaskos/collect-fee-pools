@@ -80,8 +80,8 @@ def main():
         splash.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
         splash.setWindowTitle("Collect Fee Pools")
         splash.showMessage(
-            "🏊‍♂️ Collect Fee Pools v2.0\n\nCarregando aplicação...", 
-            Qt.AlignCenter, 
+            "Collect Fee Pools v2.0\n\nCarregando aplicação...",
+            Qt.AlignCenter,
             QColor(255, 255, 255)
         )
         splash.show()
@@ -91,8 +91,8 @@ def main():
         
         # Importar e criar aplicação principal
         splash.showMessage(
-            "🏊‍♂️ Collect Fee Pools v2.0\n\nInicializando interface...", 
-            Qt.AlignCenter, 
+            "Collect Fee Pools v2.0\n\nInicializando interface...",
+            Qt.AlignCenter,
             QColor(255, 255, 255)
         )
         app.processEvents()
@@ -102,7 +102,7 @@ def main():
         main_window = MonitorColetasApp()
         
         # Configurar janela
-        main_window.setWindowTitle("🏊‍♂️ Collect Fee Pools v2.0 - Monitor de Liquidez DeFi")
+        main_window.setWindowTitle("Collect Fee Pools v2.0 - Monitor de Liquidez DeFi")
         
         # Aplicar ícone na janela
         for icon_path in icon_paths:
@@ -112,8 +112,8 @@ def main():
         
         # Finalizar splash
         splash.showMessage(
-            "🏊‍♂️ Collect Fee Pools v2.0\n\nPronto para usar!", 
-            Qt.AlignCenter, 
+            "Collect Fee Pools v2.0\n\nPronto para usar!",
+            Qt.AlignCenter,
             QColor(255, 255, 255)
         )
         app.processEvents()
