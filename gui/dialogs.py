@@ -239,7 +239,7 @@ class SelecionarPoolDialog(QDialog):
         layout.addWidget(self.combo_pools)
         
         # Aviso
-        aviso_label = QLabel("⚠️ Esta ação não pode ser desfeita!")
+        aviso_label = QLabel("Esta ação não pode ser desfeita!")
         aviso_label.setStyleSheet("color: red; font-weight: bold;")
         layout.addWidget(aviso_label)
         
