@@ -102,7 +102,7 @@ def main():
         main_window = MonitorColetasApp()
         
         # Configurar janela
-        main_window.setWindowTitle("Collect Fee Pools v2.0 - Monitor de Liquidez DeFi")
+        main_window.setWindowTitle("Collect Fee Pools")
         
         # Aplicar ícone na janela
         for icon_path in icon_paths:

@@ -143,7 +143,7 @@ class MonitorColetasApp(QMainWindow):
     
     def setup_ui(self):
         """Configura a interface principal - VERSÃO COM ESPAÇAMENTO OTIMIZADO."""
-        self.setWindowTitle("Monitor de Coletas - Pools de Liquidez")
+        self.setWindowTitle("Collect Fee Pools")
         
         # === JANELA COM ALTURA ADEQUADA ===
         self.resize(1000, 750)  # ← ALTURA AUMENTADA de 700 para 750
