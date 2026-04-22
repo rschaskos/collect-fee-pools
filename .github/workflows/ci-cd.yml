@@ -47,7 +47,7 @@ jobs:
       matrix:
         include:
           - os: macOS-Intel
-            runs-on: macos-15-intel
+            runs-on: macos-14-intel
             artifact-name: collect-fee-pools-macos-intel
 
           - os: macOS-ARM64
