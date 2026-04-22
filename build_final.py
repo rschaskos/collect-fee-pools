@@ -54,6 +54,36 @@ hiddenimports = [
     'utils.styles',
 ]
 
+# Excluir módulos Qt não utilizados para reduzir tamanho do build
+excludes = [
+    # Módulos Qt6 definitivamente NÃO usados
+    'PySide6.QtWebEngine',
+    'PySide6.QtWebEngineCore',
+    'PySide6.QtWebEngineWidgets',
+    'PySide6.QtWebChannel',
+    'PySide6.QtSql',
+    'PySide6.QtNetwork',
+    'PySide6.QtMultimedia',
+    'PySide6.QtMultimediaWidgets',
+    'PySide6.QtPrintSupport',
+    'PySide6.Qt3DCore',
+    'PySide6.Qt3DRender',
+    'PySide6.Qt3DInput',
+    'PySide6.QtCharts',
+    'PySide6.QtDataVisualization',
+    'PySide6.QtQuick',
+    'PySide6.QtQml',
+    # Módulos Python padrão desnecessários
+    'tkinter',
+    'matplotlib',
+    'numpy',
+    'scipy',
+    'pandas',
+    'PIL',
+    'pytest',
+    'unittest',
+]
+
 a = Analysis(
     ['main.py'],
     pathex=[str(project_root)],
@@ -63,7 +93,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=excludes,
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=None,
@@ -80,7 +110,7 @@ exe = EXE(
     name='collect-fee',
     debug=False,
     bootloader_ignore_signals=False,
-    strip=False,
+    strip=True,
     upx=False,
     console=True,
     disable_windowed_traceback=False,
@@ -91,7 +121,7 @@ coll = COLLECT(
     a.binaries,
     a.zipfiles,
     a.datas,
-    strip=False,
+    strip=True,
     upx=False,
     upx_exclude=[],
     name='collect-fee',
@@ -154,6 +184,36 @@ hiddenimports = [
     'utils.styles',
 ]
 
+# Excluir módulos Qt não utilizados para reduzir tamanho do build
+excludes = [
+    # Módulos Qt6 definitivamente NÃO usados
+    'PySide6.QtWebEngine',
+    'PySide6.QtWebEngineCore',
+    'PySide6.QtWebEngineWidgets',
+    'PySide6.QtWebChannel',
+    'PySide6.QtSql',
+    'PySide6.QtNetwork',
+    'PySide6.QtMultimedia',
+    'PySide6.QtMultimediaWidgets',
+    'PySide6.QtPrintSupport',
+    'PySide6.Qt3DCore',
+    'PySide6.Qt3DRender',
+    'PySide6.Qt3DInput',
+    'PySide6.QtCharts',
+    'PySide6.QtDataVisualization',
+    'PySide6.QtQuick',
+    'PySide6.QtQml',
+    # Módulos Python padrão desnecessários
+    'tkinter',
+    'matplotlib',
+    'numpy',
+    'scipy',
+    'pandas',
+    'PIL',
+    'pytest',
+    'unittest',
+]
+
 a = Analysis(
     ['main.py'],
     pathex=[str(project_root)],
@@ -163,7 +223,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=excludes,
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=None,
@@ -180,9 +240,9 @@ exe = EXE(
     name='collect-fee.exe',
     debug=False,
     bootloader_ignore_signals=False,
-    strip=False,
+    strip=True,
     upx=False,
-    console=True,
+    console=False,
     icon='icon/favicon.ico' if (project_root / 'icon' / 'favicon.ico').exists() else None,
     disable_windowed_traceback=False,
 )
@@ -192,7 +252,7 @@ coll = COLLECT(
     a.binaries,
     a.zipfiles,
     a.datas,
-    strip=False,
+    strip=True,
     upx=False,
     upx_exclude=[],
     name='collect-fee',
@@ -238,6 +298,36 @@ hiddenimports = [
     'utils.styles',
 ]
 
+# Excluir módulos Qt não utilizados para reduzir tamanho do build
+excludes = [
+    # Módulos Qt6 definitivamente NÃO usados
+    'PySide6.QtWebEngine',
+    'PySide6.QtWebEngineCore',
+    'PySide6.QtWebEngineWidgets',
+    'PySide6.QtWebChannel',
+    'PySide6.QtSql',
+    'PySide6.QtNetwork',
+    'PySide6.QtMultimedia',
+    'PySide6.QtMultimediaWidgets',
+    'PySide6.QtPrintSupport',
+    'PySide6.Qt3DCore',
+    'PySide6.Qt3DRender',
+    'PySide6.Qt3DInput',
+    'PySide6.QtCharts',
+    'PySide6.QtDataVisualization',
+    'PySide6.QtQuick',
+    'PySide6.QtQml',
+    # Módulos Python padrão desnecessários
+    'tkinter',
+    'matplotlib',
+    'numpy',
+    'scipy',
+    'pandas',
+    'PIL',
+    'pytest',
+    'unittest',
+]
+
 a = Analysis(
     ['main.py'],
     pathex=[str(project_root)],
@@ -247,7 +337,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=excludes,
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=None,
@@ -264,9 +354,10 @@ exe = EXE(
     name='collect-fee',
     debug=False,
     bootloader_ignore_signals=False,
-    strip=False,
+    strip=True,
     upx=False,
     console=True,
+    icon='icon/favicon.ico' if (project_root / 'icon' / 'favicon.ico').exists() else None,
     disable_windowed_traceback=False,
 )
 
@@ -275,7 +366,7 @@ coll = COLLECT(
     a.binaries,
     a.zipfiles,
     a.datas,
-    strip=False,
+    strip=True,
     upx=False,
     upx_exclude=[],
     name='collect-fee',
