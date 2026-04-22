@@ -59,13 +59,11 @@ def main():
         
         # Configurar ícone
         icon_paths = [
+            'icon/uniswap.png',
             'icon/favicon.ico',
-            'icon/favicon.png', 
             'icon/favicon.icns',
-            'assets/icon.ico',
-            'assets/icon.png'
         ]
-        
+
         for icon_path in icon_paths:
             if os.path.exists(icon_path):
                 icon = QIcon(icon_path)
