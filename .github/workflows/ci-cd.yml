@@ -46,9 +46,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macOS
+          - os: macOS-Intel
+            runs-on: macos-15-intel
+            artifact-name: collect-fee-pools-macos-intel
+
+          - os: macOS-ARM64
             runs-on: macos-latest
-            artifact-name: collect-fee-pools-macos
+            artifact-name: collect-fee-pools-macos-arm64
 
           - os: Windows
             runs-on: windows-latest
@@ -155,7 +159,8 @@ jobs:
           cd artifacts
 
           # Zipar todos os diretórios de artefatos
-          zip -r "Collect-Fee-Pools-macOS.zip" collect-fee-pools-macos
+          zip -r "Collect-Fee-Pools-macOS-Intel.zip" collect-fee-pools-macos-intel
+          zip -r "Collect-Fee-Pools-macOS-ARM64.zip" collect-fee-pools-macos-arm64
           zip -r "Collect-Fee-Pools-Windows.zip" collect-fee-pools-windows
           zip -r "Collect-Fee-Pools-Linux.zip" collect-fee-pools-linux
 
