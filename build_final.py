@@ -112,7 +112,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=True,
     upx=False,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
 )
 
@@ -356,7 +356,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=True,
     upx=False,
-    console=True,
+    console=False,
     icon='icon/favicon.ico' if (project_root / 'icon' / 'favicon.ico').exists() else None,
     disable_windowed_traceback=False,
 )
