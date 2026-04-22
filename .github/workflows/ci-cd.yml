@@ -151,20 +151,10 @@ jobs:
         run: |
           cd artifacts
 
-          # macOS
-          cd collect-fee-pools-macos
-          zip -r "../Collect-Fee-Pools-macOS.zip" "Collect Fee Pools.app"
-          cd ..
-
-          # Windows
-          cd collect-fee-pools-windows
-          zip -r "../Collect-Fee-Pools-Windows.zip" "collect-fee"
-          cd ..
-
-          # Linux
-          cd collect-fee-pools-linux
-          zip -r "../Collect-Fee-Pools-Linux.zip" "collect-fee"
-          cd ..
+          # Zipar todos os diretórios de artefatos
+          zip -r "Collect-Fee-Pools-macOS.zip" collect-fee-pools-macos
+          zip -r "Collect-Fee-Pools-Windows.zip" collect-fee-pools-windows
+          zip -r "Collect-Fee-Pools-Linux.zip" collect-fee-pools-linux
 
           # Listar arquivos
           ls -lh *.zip
