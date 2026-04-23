@@ -21,7 +21,7 @@ jobs:
       - name: Configurar Python 3.13
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Instalar UV
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -69,7 +69,7 @@ jobs:
       - name: Configurar Python 3.13
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Instalar UV (macOS/Linux)
         if: runner.os != 'Windows'
@@ -159,7 +159,7 @@ jobs:
       - name: Configurar Python 3.13
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Instalar UV
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
