@@ -226,7 +226,6 @@ a = Analysis(
     runtime_hooks=[],
     excludes=excludes,
     win_no_prefer_redirects=False,
-    win_private_assemblies=True,
     cipher=None,
     noarchive=False,
 )
@@ -419,12 +418,12 @@ def main():
     print(f"BUILD - COLLECT FEE POOLS ({plataforma.upper()})")
 
     if plataforma == "unknown":
-        print("❌ Plataforma não suportada")
+        print("[ERRO] Plataforma não suportada")
         return 1
 
     # Verificar arquivo principal
     if not os.path.exists('main.py'):
-        print("❌ main.py não encontrado!")
+        print("[ERRO] main.py não encontrado!")
         return 1
 
     # Preparativos específicos da plataforma
@@ -452,7 +451,7 @@ def main():
     # Build
     print("Executando build...")
     if not executar_comando(['pyinstaller', '--clean', '--noconfirm', 'collect-fee.spec']):
-        print("❌ Falha no build")
+        print("[ERRO] Falha no build")
         return 1
 
     # Verificar resultado
