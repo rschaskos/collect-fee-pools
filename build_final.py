@@ -175,6 +175,7 @@ hiddenimports = [
     'PySide6.QtWidgets',
     'PySide6.QtGui',
     'PySide6.QtSvg',
+    'pyside6_plugins',
     'models.coleta',
     'models.pool_config',
     'core.monitor',
@@ -450,12 +451,7 @@ def main():
 
     # Build
     print("Executando build...")
-    cmd = ['pyinstaller', '--clean', '--noconfirm']
-    if plataforma == "windows":
-        cmd.extend(['--collect-all', 'pyside6'])
-    cmd.append('collect-fee.spec')
-
-    if not executar_comando(cmd):
+    if not executar_comando(['pyinstaller', '--clean', '--noconfirm', 'collect-fee.spec']):
         print("[ERRO] Falha no build")
         return 1
 
