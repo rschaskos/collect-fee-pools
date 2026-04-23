@@ -105,6 +105,18 @@ jobs:
           chmod -R +x "dist/Collect Fee Pools.app/Contents/MacOS"
           xattr -d com.apple.quarantine "dist/Collect Fee Pools.app" 2>/dev/null || true
 
+      - name: Fix Windows DLL Zone Identifier
+        if: runner.os == 'Windows'
+        run: |
+          # Remove Zone.Identifier attribute that blocks DLL loading on Windows 11
+          $path = "dist\collect-fee"
+          if (Test-Path $path) {
+            Get-ChildItem -Path $path -Recurse -File | ForEach-Object {
+              Remove-Item -Path "$($_.FullName):Zone.Identifier" -ErrorAction SilentlyContinue
+            }
+            Write-Host "Zone.Identifier attributes removed"
+          }
+
       # Upload artefatos específicos por plataforma
       - name: Upload artefato (macOS)
         if: runner.os == 'macOS'

@@ -174,6 +174,7 @@ hiddenimports = [
     'PySide6.QtCore',
     'PySide6.QtWidgets',
     'PySide6.QtGui',
+    'PySide6.QtSvg',
     'models.coleta',
     'models.pool_config',
     'core.monitor',
@@ -225,7 +226,7 @@ a = Analysis(
     runtime_hooks=[],
     excludes=excludes,
     win_no_prefer_redirects=False,
-    win_private_assemblies=False,
+    win_private_assemblies=True,
     cipher=None,
     noarchive=False,
 )
