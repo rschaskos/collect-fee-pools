@@ -99,6 +99,12 @@ jobs:
       - name: Gerar executável
         run: uv run python build_final.py
 
+      - name: Fix macOS app permissions and quarantine attribute
+        if: runner.os == 'macOS'
+        run: |
+          chmod -R +x "dist/Collect Fee Pools.app/Contents/MacOS"
+          xattr -d com.apple.quarantine "dist/Collect Fee Pools.app" 2>/dev/null || true
+
       # Upload artefatos específicos por plataforma
       - name: Upload artefato (macOS)
         if: runner.os == 'macOS'
