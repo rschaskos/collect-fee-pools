@@ -96,6 +96,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libqt6gui6 libqt6core6 libqt6widgets6
 
+      - name: Instalar Visual C++ Redistributable (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install vcredist140 -y
+          Write-Host "VC++ 2022 Redistributable instalado"
+
       - name: Gerar executável
         run: uv run python build_final.py
 

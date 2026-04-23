@@ -450,7 +450,12 @@ def main():
 
     # Build
     print("Executando build...")
-    if not executar_comando(['pyinstaller', '--clean', '--noconfirm', 'collect-fee.spec']):
+    cmd = ['pyinstaller', '--clean', '--noconfirm']
+    if plataforma == "windows":
+        cmd.extend(['--collect-all', 'pyside6'])
+    cmd.append('collect-fee.spec')
+
+    if not executar_comando(cmd):
         print("[ERRO] Falha no build")
         return 1
 
