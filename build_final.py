@@ -227,6 +227,7 @@ a = Analysis(
     runtime_hooks=[],
     excludes=excludes,
     win_no_prefer_redirects=False,
+    win_private_assemblies=False,
     cipher=None,
     noarchive=False,
 )
@@ -243,7 +244,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=True,
     upx=False,
-    console=False,
+    console=True,
     icon='icon/favicon.ico' if (project_root / 'icon' / 'favicon.ico').exists() else None,
     disable_windowed_traceback=False,
 )
